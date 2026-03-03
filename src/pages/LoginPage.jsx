@@ -252,8 +252,8 @@ const LoginPage = () => {
               <div className="flex items-center gap-3" style={{ animation: mounted ? "slideRight 0.7s 0.3s both" : "none" }}>
                 <div className="relative w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #FF6B2B, #F97316)" }}>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity="0.9"/>
-                    <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity="0.9" />
+                    <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" strokeWidth="2" strokeLinecap="round" />
                   </svg>
                   <div className="absolute inset-0 rounded-xl accent-dot" style={{ border: "2px solid rgba(255,107,43,0.5)" }} />
                 </div>
@@ -291,7 +291,7 @@ const LoginPage = () => {
                   <div className="relative">
                     <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ color: focused === "phone" ? "#38BDF8" : "rgba(255,255,255,0.4)", transition: "color 0.3s" }}>
-                        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.95 12a19.79 19.79 0 01-3.07-8.67A2 2 0 012.86 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L7.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.95 12a19.79 19.79 0 01-3.07-8.67A2 2 0 012.86 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L7.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                       </svg>
                       <div className="w-px h-4" style={{ background: "rgba(255,255,255,0.15)" }} />
                       <span className="text-xs font-dm" style={{ color: "rgba(255,255,255,0.5)" }}>+84</span>
@@ -326,8 +326,8 @@ const LoginPage = () => {
                   <div className="relative">
                     <div className="absolute left-4 top-1/2 -translate-y-1/2">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ color: focused === "pass" ? "#FF6B2B" : "rgba(255,255,255,0.4)", transition: "color 0.3s" }}>
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" strokeWidth="2"/>
-                        <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" strokeWidth="2" />
+                        <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                       </svg>
                     </div>
                     <input
@@ -348,13 +348,13 @@ const LoginPage = () => {
                     >
                       {showPassword ? (
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                          <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                          <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                         </svg>
                       ) : (
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2"/>
-                          <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2" />
+                          <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
                         </svg>
                       )}
                     </button>
@@ -399,7 +399,7 @@ const LoginPage = () => {
                     <span className="flex items-center justify-center gap-2">
                       Đăng nhập
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M5 12h14M12 5l7 7-7 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M5 12h14M12 5l7 7-7 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </span>
                   )}
@@ -414,12 +414,16 @@ const LoginPage = () => {
               {/* Social */}
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { name: "Google", color: "#EA4335", icon: (
-                    <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                  )},
-                  { name: "Zalo", color: "#0068FF", icon: (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#0068FF"><rect width="24" height="24" rx="5" fill="#0068FF"/><text x="12" y="17" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold" fontFamily="Arial">Z</text></svg>
-                  )},
+                  {
+                    name: "Google", color: "#EA4335", icon: (
+                      <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" /><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" /><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" /><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" /></svg>
+                    )
+                  },
+                  {
+                    name: "Zalo", color: "#0068FF", icon: (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="#0068FF"><rect width="24" height="24" rx="5" fill="#0068FF" /><text x="12" y="17" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold" fontFamily="Arial">Z</text></svg>
+                    )
+                  },
                 ].map((s) => (
                   <button key={s.name} className="social-btn rounded-2xl py-3 flex items-center justify-center gap-2.5 text-sm font-dm" style={{ color: "rgba(255,255,255,0.75)" }}>
                     {s.icon}
@@ -459,8 +463,8 @@ const LoginPage = () => {
                 <div className="flex items-center gap-3">
                   <div className="relative w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #FF6B2B, #F97316)", boxShadow: "0 8px 24px rgba(255,107,43,0.4)" }}>
                     <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-                      <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity="0.9"/>
-                      <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                      <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity="0.9" />
+                      <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" strokeWidth="2" strokeLinecap="round" />
                     </svg>
                   </div>
                   <div>
@@ -511,7 +515,7 @@ const LoginPage = () => {
                       <span className="text-xs font-semibold text-white">Nguyễn Minh Đan</span>
                       <div className="flex gap-0.5">
                         {[...Array(5)].map((_, i) => (
-                          <svg key={i} width="10" height="10" viewBox="0 0 24 24" fill="#FF6B2B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                          <svg key={i} width="10" height="10" viewBox="0 0 24 24" fill="#FF6B2B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
                         ))}
                       </div>
                     </div>
@@ -545,7 +549,7 @@ const LoginPage = () => {
                   <div className="relative">
                     <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
                       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" style={{ color: focused === "phoneD" ? "#38BDF8" : "rgba(255,255,255,0.4)", transition: "color 0.3s" }}>
-                        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.95 12a19.79 19.79 0 01-3.07-8.67A2 2 0 012.86 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L7.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.95 12a19.79 19.79 0 01-3.07-8.67A2 2 0 012.86 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L7.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                       </svg>
                       <div className="w-px h-5" style={{ background: "rgba(255,255,255,0.15)" }} />
                       <span className="text-sm font-dm" style={{ color: "rgba(255,255,255,0.5)" }}>+84</span>
@@ -574,8 +578,8 @@ const LoginPage = () => {
                   <div className="relative">
                     <div className="absolute left-4 top-1/2 -translate-y-1/2">
                       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" style={{ color: focused === "passD" ? "#FF6B2B" : "rgba(255,255,255,0.4)", transition: "color 0.3s" }}>
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" strokeWidth="2"/>
-                        <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" strokeWidth="2" />
+                        <path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                       </svg>
                     </div>
                     <input
@@ -591,13 +595,13 @@ const LoginPage = () => {
                     <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2" style={{ color: "rgba(255,255,255,0.4)" }}>
                       {showPassword ? (
                         <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-                          <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                          <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                          <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                          <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                         </svg>
                       ) : (
                         <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2"/>
-                          <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2" />
+                          <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
                         </svg>
                       )}
                     </button>
@@ -636,7 +640,7 @@ const LoginPage = () => {
                     <span className="flex items-center justify-center gap-2">
                       Đăng nhập ngay
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                        <path d="M5 12h14M12 5l7 7-7 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M5 12h14M12 5l7 7-7 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </span>
                   )}
@@ -651,8 +655,8 @@ const LoginPage = () => {
               {/* Social */}
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { name: "Google", icon: <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> },
-                  { name: "Zalo", icon: <svg width="20" height="20" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#0068FF"/><text x="12" y="17" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold" fontFamily="Arial">Z</text></svg> },
+                  { name: "Google", icon: <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" /><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" /><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" /><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" /></svg> },
+                  { name: "Zalo", icon: <svg width="20" height="20" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#0068FF" /><text x="12" y="17" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold" fontFamily="Arial">Z</text></svg> },
                 ].map((s) => (
                   <button key={s.name} className="social-btn rounded-2xl py-3.5 flex items-center justify-center gap-3 font-dm" style={{ color: "rgba(255,255,255,0.75)" }}>
                     {s.icon}
@@ -663,7 +667,9 @@ const LoginPage = () => {
 
               <p className="text-center text-sm font-dm mt-6" style={{ color: "rgba(255,255,255,0.4)" }}>
                 Chưa có tài khoản?{" "}
-                <span className="font-semibold cursor-pointer" style={{ color: "#38BDF8" }}>Đăng ký ngay</span>
+                <span className="font-semibold cursor-pointer" style={{ color: "#38BDF8" }}
+                  onClick={() => navigate(path.REGISTER)}
+                >Đăng ký ngay</span>
               </p>
             </div>
           </div>
