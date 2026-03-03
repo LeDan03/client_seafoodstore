@@ -124,10 +124,14 @@ const Header = () => {
                                     <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">5</span>
                                 </div>
                             </button>
-                            {!user ?? (
+                            {!user ? (
                                 <button className="w-full mt-3 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 font-medium">
                                     <LogIn className="w-5 h-5" />
                                     <span>Đăng nhập</span>
+                                </button>) : (
+                                <button className="w-full mt-3 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 font-medium">
+                                    <LogOut className="w-5 h-5" />
+                                    <span>Đăng xuất</span>
                                 </button>)}
                         </div>
                     </div>
