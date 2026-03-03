@@ -1,10 +1,14 @@
 import { Search, Heart, ShoppingCart, LogIn, LogOut, UserPlus, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+import { useAuthStore } from '../stores/authStore';
+
 import path from '../utils/path';
 
 const Header = () => {
     const navigate = useNavigate();
+    const { user } = useAuthStore();
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -120,10 +124,11 @@ const Header = () => {
                                     <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">5</span>
                                 </div>
                             </button>
-                            <button className="w-full mt-3 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 font-medium">
-                                <LogIn className="w-5 h-5" />
-                                <span>Đăng nhập</span>
-                            </button>
+                            {!user ?? (
+                                <button className="w-full mt-3 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 font-medium">
+                                    <LogIn className="w-5 h-5" />
+                                    <span>Đăng nhập</span>
+                                </button>)}
                         </div>
                     </div>
                 )}

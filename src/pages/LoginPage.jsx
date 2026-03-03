@@ -1,6 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+
+import useAuthStore from "../../stores/authStore";
 import path from "../utils/path";
+
+import { authService } from "../services/authService";
+import { fi } from "zod/v4/locales";
+
+import { toast } from "react-toastify";
 
 // Floating particle component
 const Particle = ({ style }) => (
@@ -13,6 +20,8 @@ const Particle = ({ style }) => (
 const LoginPage = () => {
 
   const navigate = useNavigate();
+
+  const setAuth = useAuthStore((state) => state.setAuth);
 
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -29,8 +38,9 @@ const LoginPage = () => {
     return () => clearTimeout(t);
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     let valid = true;
 
     if (!phone || phone.length < 9) {
@@ -50,7 +60,29 @@ const LoginPage = () => {
     if (!valid) return;
 
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 2200);
+
+    try {
+      const response = await authService.login({
+        phoneNumber: phone,
+        password,
+      });
+
+      // Nếu backend trả ApiResponse
+      const authData = response.data.data;
+
+      // Lưu vào Zustand
+      setAuth(authData);
+
+      toast.success("Đăng nhập thành công!");
+      authData.roleName === "ROLE_ADMIN" ? navigate(path.MANAGE) : navigate(path.HOME);
+      // navigate();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Đăng nhập thất bại!"
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleRipple = (e) => {
