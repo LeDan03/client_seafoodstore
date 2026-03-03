@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../stores/authStore";
 import path from "../utils/path";
 
-import { authService } from "../services/authService";
+import { login } from "../services/authService";
 import { fi } from "zod/v4/locales";
 
 import { toast } from "react-toastify";
@@ -62,7 +62,7 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await authService.login({
+      const response = await login({
         phoneNumber: phone,
         password,
       });
