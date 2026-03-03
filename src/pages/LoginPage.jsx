@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import path from "../utils/path";
 
 // Floating particle component
 const Particle = ({ style }) => (
@@ -9,6 +11,9 @@ const Particle = ({ style }) => (
 );
 
 const LoginPage = () => {
+
+  const navigate = useNavigate();
+
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -426,7 +431,7 @@ const LoginPage = () => {
               {/* Sign up */}
               <p className="text-center text-xs font-dm mt-5" style={{ color: "rgba(255,255,255,0.4)" }}>
                 Chưa có tài khoản?{" "}
-                <span className="font-semibold cursor-pointer" style={{ color: "#38BDF8" }}>Đăng ký ngay</span>
+                <span className="font-semibold cursor-pointer" style={{ color: "#38BDF8" }} onClick={() => navigate(path.REGISTER)}>Đăng ký ngay</span>
               </p>
             </div>
           </div>
