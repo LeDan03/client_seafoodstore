@@ -77,6 +77,7 @@ const LoginPage = () => {
       authData.roleName === "ROLE_ADMIN" ? navigate(path.MANAGE) : navigate(path.HOME);
       // navigate();
     } catch (error) {
+      console.error("Login error:", error);
       toast.error(
         error.response?.data?.message || "Đăng nhập thất bại!"
       );
