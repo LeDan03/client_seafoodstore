@@ -66,16 +66,16 @@ const LoginPage = () => {
         phoneNumber: phone,
         password,
       });
+      console.log("Login response:", response);
 
       // Nếu backend trả ApiResponse
-      const authData = response.data.data;
+      const authData = response.data.data.user;
 
       // Lưu vào Zustand
       setAuth(authData);
 
       toast.success("Đăng nhập thành công!");
       authData.roleName === "ROLE_ADMIN" ? navigate(path.MANAGE) : navigate(path.HOME);
-      // navigate();
     } catch (error) {
       console.error("Login error:", error);
       toast.error(
