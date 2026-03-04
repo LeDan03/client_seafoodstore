@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import "../../styles/manage.module.css";
 
 // ─── MOCK DATA ────────────────────────────────────────────────────────────────
 const VISITOR_DATA = [
@@ -120,7 +121,7 @@ const VisitorChart = ({ data }) => {
   const gridLines = [0, 0.25, 0.5, 0.75, 1].map(f => Math.round(max * (1 - f)));
 
   return (
-    <div className="relative w-full overflow-x-auto">
+    <div className="manage-page min-h-screen">
       <svg
         viewBox={`0 0 ${W} ${H}`}
         className="w-full"
@@ -230,42 +231,7 @@ const ManagePage = () => {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
-        *{box-sizing:border-box;margin:0;padding:0}
-        body{background:#F8FAFC}
-        .font-jakarta{font-family:'Plus Jakarta Sans',sans-serif}
-        .font-mono{font-family:'DM Mono',monospace}
-        @keyframes slideInLeft{from{opacity:0;transform:translateX(-100%)}to{opacity:1;transform:translateX(0)}}
-        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-        @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-        .sidebar-overlay{animation:fadeIn .2s ease}
-        .sidebar-panel{animation:slideInLeft .25s cubic-bezier(.4,0,.2,1)}
-        .card-enter{animation:slideUp .4s ease both}
-        .stat-num{animation:countUp .5s ease both}
-        .live-dot{animation:pulse 2s ease infinite}
-        .tab-active{position:relative}
-        .tab-active::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:20px;height:3px;background:linear-gradient(90deg,#FF6B2B,#38BDF8);border-radius:2px 2px 0 0}
-        .row-hover{transition:background .15s ease}
-        .row-hover:hover{background:#F8FAFC}
-        .btn-primary{background:linear-gradient(135deg,#FF6B2B,#F97316);transition:all .25s ease;box-shadow:0 4px 14px rgba(255,107,43,.3)}
-        .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,107,43,.4)}
-        .btn-sky{background:linear-gradient(135deg,#38BDF8,#0EA5E9);transition:all .25s ease;box-shadow:0 4px 14px rgba(56,189,248,.25)}
-        .btn-sky:hover{transform:translateY(-1px)}
-        .card-shadow{box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04)}
-        .card-shadow-md{box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 24px rgba(0,0,0,.05)}
-        .search-input:focus{outline:none;border-color:#38BDF8;box-shadow:0 0 0 3px rgba(56,189,248,.12)}
-        .notif-panel{animation:slideUp .2s ease}
-        .chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:500;white-space:nowrap}
-        ::-webkit-scrollbar{width:4px;height:4px}
-        ::-webkit-scrollbar-track{background:transparent}
-        ::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:4px}
-        .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-        table{border-collapse:collapse;width:100%;min-width:520px}
-        th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:.05em;background:#F8FAFC;border-bottom:1px solid #F1F5F9;white-space:nowrap}
-        td{padding:12px 14px;font-size:13px;color:#334155;border-bottom:1px solid #F8FAFC;vertical-align:middle}
-        .mobile-card{background:white;border-radius:16px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04)}
-      `}</style>
+        `}</style>
 
       <div className="font-jakarta min-h-screen" style={{ background: "#F0F4F8" }}>
 

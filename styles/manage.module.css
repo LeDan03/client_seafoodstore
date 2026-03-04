@@ -1,0 +1,221 @@
+@import "tailwindcss";
+
+/* ───────── GLOBAL SAFE AREA ───────── */
+
+#root {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
+  background-color: #cbffc7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #F8FAFC;
+}
+
+/* Fonts utility */
+.font-jakarta {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.font-mono {
+  font-family: 'DM Mono', monospace;
+}
+
+/* Root variables */
+:root {
+  --white: #ffffff;
+  --off: #f7f8fa;
+  --off2: #eef0f4;
+  --navy: #1b2a3b;
+  --navy2: #243447;
+  --slate: #3d5166;
+  --steel: #566f86;
+  --mist: #8fa4b5;
+  --orange: #ff6b2b;
+  --orange2: #e85520;
+  --text: #1b2a3b;
+  --muted: rgba(27, 42, 59, 0.50);
+  --border: rgba(27, 42, 59, 0.09);
+  --border2: rgba(27, 42, 59, 0.16);
+}
+
+/* ───────── GLOBAL ANIMATIONS SAFE ───────── */
+
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px) }
+  to { opacity: 1; transform: translateY(0) }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-100%) }
+  to { opacity: 1; transform: translateX(0) }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(8px) }
+  to { opacity: 1; transform: translateY(0) }
+}
+
+@keyframes pulse {
+  0%,100% { opacity: 1 }
+  50% { opacity: .5 }
+}
+
+/* Scrollbar safe */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+
+/* ===================================================== */
+/* ================= MANAGE PAGE ONLY ================== */
+/* ===================================================== */
+
+.manage-page {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Sidebar */
+.manage-page .sidebar-overlay {
+  animation: fadeIn .2s ease;
+}
+
+.manage-page .sidebar-panel {
+  animation: slideInLeft .25s cubic-bezier(.4,0,.2,1);
+}
+
+/* Cards */
+.manage-page .card-shadow {
+  box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+}
+
+.manage-page .card-shadow-md {
+  box-shadow: 0 2px 8px rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.05);
+}
+
+.manage-page .card-enter {
+  animation: slideUp .4s ease both;
+}
+
+.manage-page .stat-num {
+  animation: countUp .5s ease both;
+}
+
+/* Buttons */
+.manage-page .btn-primary {
+  background: linear-gradient(135deg, #FF6B2B, #F97316);
+  transition: all .25s ease;
+  box-shadow: 0 4px 14px rgba(255,107,43,.3);
+}
+
+.manage-page .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(255,107,43,.4);
+}
+
+.manage-page .btn-sky {
+  background: linear-gradient(135deg, #38BDF8, #0EA5E9);
+  transition: all .25s ease;
+  box-shadow: 0 4px 14px rgba(56,189,248,.25);
+}
+
+/* Tabs */
+.manage-page .tab-active {
+  position: relative;
+}
+
+.manage-page .tab-active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  background: linear-gradient(90deg, #FF6B2B, #38BDF8);
+  border-radius: 2px 2px 0 0;
+}
+
+/* Table */
+.manage-page .table-wrap {
+  overflow-x: auto;
+}
+
+.manage-page table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 520px;
+}
+
+.manage-page th {
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #94A3B8;
+  text-transform: uppercase;
+  background: #F8FAFC;
+}
+
+.manage-page td {
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #334155;
+}
+
+/* Row hover */
+.manage-page .row-hover:hover {
+  background: #F8FAFC;
+}
+
+/* Input */
+.manage-page .search-input:focus {
+  outline: none;
+  border-color: #38BDF8;
+  box-shadow: 0 0 0 3px rgba(56,189,248,.12);
+}
+
+/* Chip */
+.manage-page .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* Notification */
+.manage-page .notif-panel {
+  animation: slideUp .2s ease;
+}
+
+/* Mobile Card */
+.manage-page .mobile-card {
+  background: white;
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 2px 8px rgba(0,0,0,.04);
+}
