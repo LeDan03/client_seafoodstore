@@ -137,7 +137,7 @@ const RegisterPage = () => {
             };
 
             const res = await register(payload);
-            if (res.data.data.status === HttpStatusCode.Created) {
+            if (res.data.status === HttpStatusCode.Created) {
                 toast.success("Đăng ký thành công");
                 setStep(1); // chuyển sang màn hình success
                 navigate(path.LOGIN);
