@@ -145,11 +145,11 @@ const RegisterPage = () => {
 
 
         } catch (err) {
-
+            console.error("Lỗi khi đăng ký tk", err)
             let message = "Đăng ký thất bại";
 
-            if (err?.response?.data?.message) {
-                message = err.response.data.message;
+            if (err?.response?.data?.data?.message || err?.response?.data?.message) {
+                message = err?.response?.data?.data?.message || err?.response?.data?.message;
             }
 
             toast.error(message);
