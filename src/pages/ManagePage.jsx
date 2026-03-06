@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import "../../styles/manage.module.css";
+import useCategoriesStore from "../../stores/categoryStore";
+import useProductStore from "../../stores/productStore";
 
 // ─── MOCK DATA ────────────────────────────────────────────────────────────────
 const VISITOR_DATA = [
@@ -15,24 +16,24 @@ const VISITOR_DATA = [
   { day: "28", v: 1540 }, { day: "29", v: 1480 }, { day: "30", v: 1720 },
 ];
 
-const PRODUCTS = [
-  { id: "SP001", name: "Tư vấn Thiết kế Web", category: "Dịch vụ", price: "4.500.000₫", stock: "∞", status: "active", sold: 48 },
-  { id: "SP002", name: "Gói SEO 3 tháng", category: "Marketing", price: "2.800.000₫", stock: "∞", status: "active", sold: 32 },
-  { id: "SP003", name: "Thiết kế Logo + Branding", category: "Thiết kế", price: "3.200.000₫", stock: "∞", status: "active", sold: 27 },
-  { id: "SP004", name: "Quản lý MXH / tháng", category: "Marketing", price: "1.900.000₫", stock: "∞", status: "inactive", sold: 15 },
-  { id: "SP005", name: "App Mobile (iOS/Android)", category: "Dev", price: "25.000.000₫", stock: "∞", status: "active", sold: 6 },
-  { id: "SP006", name: "Landing Page Premium", category: "Dịch vụ", price: "5.800.000₫", stock: "∞", status: "active", sold: 19 },
+const MOCK_PRODUCTS = [
+  { id: "SP001", name: "Tư vấn Thiết kế Web", description: "Tư vấn và thiết kế website theo yêu cầu, tối ưu UX/UI, responsive đa thiết bị", minPrice: 4500000, maxPrice: 12000000, MOQ: 1, categoryId: "CAT001", productTypeId: "PT001", createdAt: "2026-01-10", updatedAt: "2026-02-20", images: [] },
+  { id: "SP002", name: "Gói SEO 3 tháng", description: "Tối ưu SEO toàn diện: từ khóa, on-page, off-page, báo cáo hàng tuần", minPrice: 2800000, maxPrice: 5500000, MOQ: 1, categoryId: "CAT002", productTypeId: "PT002", createdAt: "2026-01-15", updatedAt: "2026-03-01", images: [] },
+  { id: "SP003", name: "Thiết kế Logo + Branding", description: "Xây dựng bộ nhận diện thương hiệu hoàn chỉnh", minPrice: 3200000, maxPrice: 8000000, MOQ: 1, categoryId: "CAT003", productTypeId: "PT004", createdAt: "2026-01-20", updatedAt: "2026-02-15", images: [] },
+  { id: "SP004", name: "Quản lý MXH / tháng", description: "Quản lý Facebook, Instagram, TikTok", minPrice: 1900000, maxPrice: 3500000, MOQ: 3, categoryId: "CAT002", productTypeId: "PT002", createdAt: "2026-02-01", updatedAt: "2026-03-01", images: [] },
+  { id: "SP005", name: "App Mobile (iOS/Android)", description: "Phát triển ứng dụng di động native hoặc cross-platform", minPrice: 25000000, maxPrice: 80000000, MOQ: 1, categoryId: "CAT004", productTypeId: "PT001", createdAt: "2025-12-01", updatedAt: "2026-02-28", images: [] },
+  { id: "SP006", name: "Landing Page Premium", description: "Thiết kế landing page chuyển đổi cao", minPrice: 5800000, maxPrice: 9500000, MOQ: 1, categoryId: "CAT001", productTypeId: "PT001", createdAt: "2026-01-25", updatedAt: "2026-03-02", images: [] },
 ];
 
-const CONSULTATIONS = [
-  { id: "TV001", name: "Nguyễn Thị Lan", phone: "0912 345 678", service: "Thiết kế Web", date: "02/03/2026 09:15", status: "pending", note: "Cần tư vấn website bán hàng" },
-  { id: "TV002", name: "Trần Minh Khoa", phone: "0987 654 321", service: "SEO", date: "02/03/2026 11:30", status: "confirmed", note: "Shop thời trang, muốn tăng traffic" },
-  { id: "TV003", name: "Lê Thu Hương", phone: "0901 234 567", service: "App Mobile", date: "01/03/2026 14:00", status: "done", note: "App đặt đồ ăn nội bộ công ty" },
-  { id: "TV004", name: "Phạm Quốc Bảo", phone: "0976 543 210", service: "Branding", date: "01/03/2026 16:45", status: "pending", note: "Startup fintech cần bộ nhận diện" },
-  { id: "TV005", name: "Võ Ngọc Diễm", phone: "0934 567 890", service: "Landing Page", date: "29/02/2026 10:00", status: "cancelled", note: "" },
+const MOCK_CONSULTATIONS = [
+  { id: "TV001", phone: "0912 345 678", email: "lan.nguyen@gmail.com", status: "pending", createdAt: "2026-03-02 09:15" },
+  { id: "TV002", phone: "0987 654 321", email: "khoa.tran@yahoo.com", status: "done", createdAt: "2026-03-02 11:30" },
+  { id: "TV003", phone: "0901 234 567", email: "", status: "done", createdAt: "2026-03-01 14:00" },
+  { id: "TV004", phone: "0976 543 210", email: "bao.pham@gmail.com", status: "pending", createdAt: "2026-03-01 16:45" },
+  { id: "TV005", phone: "0934 567 890", email: "", status: "cancelled", createdAt: "2026-02-29 10:00" },
 ];
 
-const ORDERS = [
+const MOCK_ORDERS = [
   { id: "DH2603001", customer: "Nguyễn Thị Lan", service: "Tư vấn Thiết kế Web", amount: "4.500.000₫", date: "02/03/2026", status: "processing", payment: "Chuyển khoản" },
   { id: "DH2603002", customer: "Trần Minh Khoa", service: "Gói SEO 3 tháng", amount: "2.800.000₫", date: "02/03/2026", status: "done", payment: "Momo" },
   { id: "DH2602003", customer: "Công ty ABC", service: "App Mobile", amount: "25.000.000₫", date: "28/02/2026", status: "processing", payment: "Chuyển khoản" },
@@ -41,7 +42,7 @@ const ORDERS = [
   { id: "DH2601006", customer: "Lê Thu Hương", service: "Quản lý MXH", amount: "1.900.000₫", date: "20/02/2026", status: "done", payment: "Chuyển khoản" },
 ];
 
-const CUSTOMERS = [
+const MOCK_CUSTOMERS = [
   { id: "KH001", name: "Nguyễn Thị Lan", phone: "0912 345 678", email: "lan.nguyen@gmail.com", orders: 3, total: "12.800.000₫", joined: "15/01/2026", tier: "gold" },
   { id: "KH002", name: "Trần Minh Khoa", phone: "0987 654 321", email: "khoa.tran@yahoo.com", orders: 2, total: "5.600.000₫", joined: "20/01/2026", tier: "silver" },
   { id: "KH003", name: "Công ty ABC Tech", phone: "028 1234 5678", email: "contact@abctech.vn", orders: 5, total: "48.200.000₫", joined: "05/12/2025", tier: "platinum" },
@@ -50,54 +51,184 @@ const CUSTOMERS = [
   { id: "KH006", name: "Võ Ngọc Diễm", phone: "0934 567 890", email: "diem.vo@outlook.com", orders: 2, total: "6.400.000₫", joined: "15/02/2026", tier: "silver" },
 ];
 
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+const STATUS_CONFIG = {
+  active: { label: "Hoạt động", bg: "#ECFDF5", text: "#059669", dot: "#10B981" },
+  inactive: { label: "Tạm ẩn", bg: "#F1F5F9", text: "#64748B", dot: "#94A3B8" },
+  pending: { label: "Chưa tư vấn", bg: "#FFFBEB", text: "#D97706", dot: "#F59E0B" },
+  done: { label: "Đã tư vấn", bg: "#ECFDF5", text: "#059669", dot: "#10B981" },
+  cancelled: { label: "Đã huỷ", bg: "#FEF2F2", text: "#DC2626", dot: "#EF4444" },
+  processing: { label: "Đang xử lý", bg: "#FFF7ED", text: "#EA580C", dot: "#FF6B2B" },
+};
+
+const TIER_CONFIG = {
+  platinum: { label: "Platinum", bg: "#F5F3FF", text: "#7C3AED", icon: "💎" },
+  gold: { label: "Gold", bg: "#FFFBEB", text: "#B45309", icon: "🥇" },
+  silver: { label: "Silver", bg: "#F1F5F9", text: "#475569", icon: "🥈" },
+  new: { label: "Mới", bg: "#F0F9FF", text: "#0284C7", icon: "✨" },
+};
+
+const TABS = [
+  { id: "stats", label: "Thống kê", shortLabel: "Thống kê", icon: "📊" },
+  { id: "categories", label: "Danh mục", shortLabel: "Danh mục", icon: "🗂️" },
+  { id: "producttypes", label: "Loại sản phẩm", shortLabel: "Loại SP", icon: "📦" },
+  { id: "products", label: "Sản phẩm", shortLabel: "Sản phẩm", icon: "🛍️" },
+  { id: "consult", label: "Tư vấn", shortLabel: "Tư vấn", icon: "💬" },
+  { id: "orders", label: "Đơn hàng", shortLabel: "Đơn hàng", icon: "📋" },
+  { id: "customers", label: "Khách hàng", shortLabel: "Khách", icon: "👥" },
+];
+
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
-const statusConfig = {
-  active:     { label: "Hoạt động",  bg: "bg-emerald-50", text: "text-emerald-600", dot: "#10B981" },
-  inactive:   { label: "Tạm ẩn",    bg: "bg-slate-100",  text: "text-slate-500",  dot: "#94A3B8" },
-  pending:    { label: "Chờ xử lý", bg: "bg-amber-50",   text: "text-amber-600",  dot: "#F59E0B" },
-  confirmed:  { label: "Đã xác nhận",bg:"bg-sky-50",     text: "text-sky-600",    dot: "#0EA5E9" },
-  done:       { label: "Hoàn thành", bg: "bg-emerald-50", text: "text-emerald-600",dot: "#10B981" },
-  cancelled:  { label: "Đã huỷ",    bg: "bg-red-50",     text: "text-red-500",    dot: "#EF4444" },
-  processing: { label: "Đang xử lý",bg: "bg-orange-50",  text: "text-orange-500", dot: "#FF6B2B" },
-};
+const formatPrice = (n) => n ? n.toLocaleString("vi-VN") + "₫" : "—";
 
-const tierConfig = {
-  platinum: { label: "Platinum", bg: "bg-violet-50", text: "text-violet-600", icon: "💎" },
-  gold:     { label: "Gold",     bg: "bg-amber-50",  text: "text-amber-600",  icon: "🥇" },
-  silver:   { label: "Silver",   bg: "bg-slate-100", text: "text-slate-600",  icon: "🥈" },
-  new:      { label: "Mới",      bg: "bg-sky-50",    text: "text-sky-600",    icon: "✨" },
-};
+// ─── GLOBAL STYLES ────────────────────────────────────────────────────────────
+const GLOBAL_CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+  .mp, .mp * { box-sizing: border-box; }
+  .mp { text-align: left; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .mp button, .mp input, .mp textarea, .mp select { font-family: 'Plus Jakarta Sans', sans-serif; }
 
-const Badge = ({ status, map = statusConfig }) => {
-  const c = map[status] || map.pending;
+  @keyframes mp-fadeIn    { from{opacity:0} to{opacity:1} }
+  @keyframes mp-slideUp   { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes mp-slideLeft { from{opacity:0;transform:translateX(-100%)} to{opacity:1;transform:translateX(0)} }
+  @keyframes mp-pulse     { 0%,100%{opacity:1} 50%{opacity:.35} }
+  @keyframes mp-scaleIn   { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:scale(1)} }
+
+  .mp-overlay  { animation: mp-fadeIn .18s ease; }
+  .mp-drawer   { animation: mp-slideLeft .22s cubic-bezier(.4,0,.2,1); }
+  .mp-card     { animation: mp-slideUp .35s ease both; }
+  .mp-modal-in { animation: mp-scaleIn .2s ease; }
+  .mp-live     { animation: mp-pulse 2s ease-in-out infinite; }
+
+  .mp table { border-collapse: collapse; width: 100%; min-width: 480px; }
+  .mp th { padding:10px 14px; font-size:11px; font-weight:600; color:#94A3B8; text-transform:uppercase; letter-spacing:.06em; background:#F8FAFC; text-align:left; white-space:nowrap; }
+  .mp td { padding:13px 14px; font-size:13px; color:#334155; border-bottom:1px solid #F1F5F9; vertical-align:middle; }
+  .mp tbody tr:last-child td { border-bottom:none; }
+  .mp-tr { transition:background .12s; cursor:default; }
+  .mp-tr:hover { background:#F8FAFC; }
+
+  .mp-input { width:100%; padding:10px 13px; border-radius:10px; border:1.5px solid #E2E8F0; font-size:13px; color:#334155; outline:none; transition:border-color .15s, box-shadow .15s; background:white; }
+  .mp-input:focus { border-color:#38BDF8; box-shadow:0 0 0 3px rgba(56,189,248,.12); }
+  .mp-input::placeholder { color:#94A3B8; }
+  .mp-select { appearance:none; background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394A3B8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; padding-right:32px; }
+
+  .mp-chip { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:500; white-space:nowrap; }
+  .mp-mono { font-family:'DM Mono',monospace; font-size:12px; color:#94A3B8; }
+
+  .mp-btn { display:inline-flex; align-items:center; justify-content:center; gap:7px; border:none; border-radius:10px; font-weight:600; cursor:pointer; transition:transform .2s, box-shadow .2s; font-family:'Plus Jakarta Sans',sans-serif; }
+  .mp-btn:active { transform:scale(.97); }
+  .mp-btn-primary { background:linear-gradient(135deg,#FF6B2B,#F97316); color:white; box-shadow:0 4px 14px rgba(255,107,43,.28); }
+  .mp-btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(255,107,43,.38); }
+  .mp-btn-sky { background:linear-gradient(135deg,#38BDF8,#0EA5E9); color:white; box-shadow:0 3px 10px rgba(56,189,248,.2); }
+  .mp-btn-sky:hover { transform:translateY(-1px); box-shadow:0 6px 18px rgba(56,189,248,.35); }
+  .mp-btn-ghost { background:transparent; color:#94A3B8; }
+  .mp-btn-ghost:hover { background:#F1F5F9; color:#64748B; }
+  .mp-btn-danger { background:#FEF2F2; color:#EF4444; }
+  .mp-btn-danger:hover { background:#FEE2E2; }
+  .mp-btn-outline { background:white; color:#64748B; border:1.5px solid #E2E8F0; }
+  .mp-btn-outline:hover { border-color:#CBD5E1; }
+
+  .mp-icon-btn { width:32px; height:32px; border-radius:8px; padding:0; }
+
+  .mp-card-box { background:white; border-radius:16px; box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.04); }
+  .mp-mcard { background:white; border-radius:14px; padding:14px 16px; box-shadow:0 1px 3px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04); }
+
+  .mp-scroll::-webkit-scrollbar { width:4px; height:4px; }
+  .mp-scroll::-webkit-scrollbar-thumb { background:#CBD5E1; border-radius:4px; }
+  .mp-noscroll::-webkit-scrollbar { display:none; }
+
+  .mp-tab-pill { position:relative; }
+  .mp-tab-pill.active::after { content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:18px; height:3px; background:linear-gradient(90deg,#FF6B2B,#38BDF8); border-radius:2px 2px 0 0; }
+
+  .mp-notif-panel { animation:mp-slideUp .18s ease; }
+  .mp-search:focus { border-color:#38BDF8; box-shadow:0 0 0 3px rgba(56,189,248,.1); outline:none; }
+
+  /* Swipe-friendly tap targets on mobile */
+  @media (max-width: 768px) {
+    .mp td { padding:11px 12px; }
+    .mp-mcard { padding:14px; }
+  }
+`;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ATOMIC COMPONENTS
+// ═══════════════════════════════════════════════════════════════════════════
+
+const Badge = ({ status }) => {
+  const c = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${c.bg} ${c.text}`}>
-      <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: c.dot }} />
+    <span className="mp-chip" style={{ background: c.bg, color: c.text }}>
+      <span style={{ width: 6, height: 6, borderRadius: "50%", background: c.dot, display: "inline-block", flexShrink: 0 }} />
       {c.label}
     </span>
   );
 };
 
-// ─── SPARKLINE CHART ──────────────────────────────────────────────────────────
-const MiniChart = ({ data, color = "#FF6B2B", height = 48 }) => {
+const Field = ({ label, children, half }) => (
+  <div style={{ marginBottom: 14, width: half ? "calc(50% - 6px)" : "100%" }}>
+    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#475569", marginBottom: 5 }}>{label}</label>
+    {children}
+  </div>
+);
+
+const ConfirmDialog = ({ message, onConfirm, onCancel }) => (
+  <div style={{ position: "fixed", inset: 0, zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+    <div className="mp-overlay" style={{ position: "absolute", inset: 0, background: "rgba(15,23,42,.5)", backdropFilter: "blur(4px)" }} onClick={onCancel} />
+    <div className="mp-modal-in" style={{ position: "relative", background: "white", borderRadius: 18, padding: 24, maxWidth: 340, width: "100%", boxShadow: "0 8px 40px rgba(0,0,0,.18)", zIndex: 1, textAlign: "center" }}>
+      <div style={{ width: 52, height: 52, borderRadius: 16, background: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px", fontSize: 24 }}>🗑️</div>
+      <p style={{ margin: "0 0 20px", fontSize: 14, color: "#334155", lineHeight: 1.6 }}>{message}</p>
+      <div style={{ display: "flex", gap: 10 }}>
+        <button className="mp-btn mp-btn-outline" style={{ flex: 1, padding: "10px" }} onClick={onCancel}>Huỷ</button>
+        <button className="mp-btn mp-btn-danger" style={{ flex: 1, padding: "10px", fontWeight: 700 }} onClick={onConfirm}>Xoá</button>
+      </div>
+    </div>
+  </div>
+);
+
+const Modal = ({ title, onClose, children, wide }) => (
+  <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "flex-end", justifyContent: "center", padding: "0" }} className="sm-center">
+    <div className="mp-overlay" style={{ position: "absolute", inset: 0, background: "rgba(15,23,42,.45)", backdropFilter: "blur(4px)" }} onClick={onClose} />
+    <div className="mp-modal-in" style={{
+      position: "relative", background: "white", zIndex: 1, width: "100%",
+      maxWidth: wide ? 620 : 480, maxHeight: "92vh", overflowY: "auto",
+      borderRadius: "20px 20px 0 0",
+      boxShadow: "0 -4px 40px rgba(0,0,0,.15)",
+    }}>
+      {/* drag handle */}
+      <div style={{ width: 36, height: 4, borderRadius: 2, background: "#E2E8F0", margin: "12px auto 0" }} />
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px 0" }}>
+        <h3 style={{ margin: 0, fontWeight: 700, color: "#1E293B", fontSize: 16 }}>{title}</h3>
+        <button className="mp-btn mp-btn-ghost mp-icon-btn" onClick={onClose}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+        </button>
+      </div>
+      <div style={{ padding: "16px 20px 24px" }}>{children}</div>
+    </div>
+    <style>{`@media(min-width:640px){ .sm-center{ align-items:center; padding:20px; } .sm-center > div:last-child{ border-radius:20px; } }`}</style>
+  </div>
+);
+
+// ─── MINI CHART ───────────────────────────────────────────────────────────────
+const MiniChart = ({ data, color = "#FF6B2B", height = 36 }) => {
   const max = Math.max(...data.map(d => d.v));
   const min = Math.min(...data.map(d => d.v));
   const w = 120, h = height;
   const pts = data.map((d, i) => {
     const x = (i / (data.length - 1)) * w;
-    const y = h - ((d.v - min) / (max - min)) * (h - 6) - 3;
+    const y = h - ((d.v - min) / (max - min || 1)) * (h - 6) - 3;
     return `${x},${y}`;
   }).join(" ");
   const area = `0,${h} ${pts} ${w},${h}`;
+  const gid = `g${color.replace("#", "")}`;
   return (
     <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none">
       <defs>
-        <linearGradient id={`g${color.replace("#","")}`} x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity="0.25" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
-      <polygon points={area} fill={`url(#g${color.replace("#","")})`} />
+      <polygon points={area} fill={`url(#${gid})`} />
       <polyline points={pts} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -107,815 +238,845 @@ const MiniChart = ({ data, color = "#FF6B2B", height = 48 }) => {
 const VisitorChart = ({ data }) => {
   const [tooltip, setTooltip] = useState(null);
   const max = Math.max(...data.map(d => d.v));
-  const W = 700, H = 180;
-  const PAD = { t: 16, b: 32, l: 44, r: 16 };
-  const cw = W - PAD.l - PAD.r;
-  const ch = H - PAD.t - PAD.b;
-  const pts = data.map((d, i) => {
-    const x = PAD.l + (i / (data.length - 1)) * cw;
-    const y = PAD.t + (1 - d.v / max) * ch;
-    return { x, y, ...d };
-  });
+  const W = 700, H = 180, PAD = { t: 16, b: 32, l: 44, r: 16 };
+  const cw = W - PAD.l - PAD.r, ch = H - PAD.t - PAD.b;
+  const pts = data.map((d, i) => ({ x: PAD.l + (i / (data.length - 1)) * cw, y: PAD.t + (1 - d.v / max) * ch, ...d }));
   const path = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x},${p.y}`).join(" ");
-  const area = `M${pts[0].x},${PAD.t + ch} ${pts.map(p => `L${p.x},${p.y}`).join(" ")} L${pts[pts.length-1].x},${PAD.t+ch} Z`;
-  const gridLines = [0, 0.25, 0.5, 0.75, 1].map(f => Math.round(max * (1 - f)));
-
+  const area = `M${pts[0].x},${PAD.t + ch} ${pts.map(p => `L${p.x},${p.y}`).join(" ")} L${pts[pts.length - 1].x},${PAD.t + ch} Z`;
+  const gridLines = [0, .25, .5, .75, 1].map(f => Math.round(max * (1 - f)));
   return (
-    <div className="manage-page min-h-screen">
-      <svg
-        viewBox={`0 0 ${W} ${H}`}
-        className="w-full"
-        style={{ minWidth: 320, height: "auto", maxHeight: 200 }}
-        onMouseLeave={() => setTooltip(null)}
-      >
-        <defs>
-          <linearGradient id="visitorGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#FF6B2B" stopOpacity="0.22" />
-            <stop offset="100%" stopColor="#FF6B2B" stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#38BDF8" />
-            <stop offset="50%" stopColor="#FF6B2B" />
-            <stop offset="100%" stopColor="#FB923C" />
-          </linearGradient>
-        </defs>
-
-        {/* Grid */}
-        {gridLines.map((val, i) => {
-          const y = PAD.t + (i / 4) * ch;
-          return (
-            <g key={i}>
-              <line x1={PAD.l} y1={y} x2={W - PAD.r} y2={y} stroke="#F1F5F9" strokeWidth="1" />
-              <text x={PAD.l - 6} y={y + 4} textAnchor="end" fontSize="9" fill="#94A3B8">{val >= 1000 ? `${(val/1000).toFixed(1)}k` : val}</text>
-            </g>
-          );
-        })}
-
-        {/* X labels — every 5 days */}
-        {pts.filter((_, i) => i % 4 === 0 || i === pts.length - 1).map((p, i) => (
-          <text key={i} x={p.x} y={H - 6} textAnchor="middle" fontSize="9" fill="#94A3B8">{p.day}</text>
-        ))}
-
-        {/* Area fill */}
-        <path d={area} fill="url(#visitorGrad)" />
-
-        {/* Line */}
-        <path d={path} fill="none" stroke="url(#lineGrad)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-
-        {/* Dots + hover */}
-        {pts.map((p, i) => (
-          <g key={i} onMouseEnter={() => setTooltip(p)} style={{ cursor: "pointer" }}>
-            <circle cx={p.x} cy={p.y} r="10" fill="transparent" />
-            <circle cx={p.x} cy={p.y} r={tooltip?.day === p.day ? 4 : 2.5}
-              fill={tooltip?.day === p.day ? "#FF6B2B" : "#fff"}
-              stroke={tooltip?.day === p.day ? "#FF6B2B" : "#CBD5E1"}
-              strokeWidth="1.5"
-              style={{ transition: "r .15s" }}
-            />
-          </g>
-        ))}
-
-        {/* Tooltip */}
-        {tooltip && (() => {
-          const tx = Math.min(Math.max(tooltip.x, 60), W - 60);
-          const ty = tooltip.y - 36;
-          return (
-            <g>
-              <rect x={tx - 36} y={ty} width={72} height={26} rx={6} fill="#1E293B" />
-              <text x={tx} y={ty + 11} textAnchor="middle" fontSize="9" fill="#94A3B8">Ngày {tooltip.day}</text>
-              <text x={tx} y={ty + 22} textAnchor="middle" fontSize="10" fill="white" fontWeight="600">{tooltip.v.toLocaleString()} lượt</text>
-            </g>
-          );
-        })()}
-      </svg>
-    </div>
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", maxHeight: 200, minWidth: 280, display: "block" }} onMouseLeave={() => setTooltip(null)}>
+      <defs>
+        <linearGradient id="vGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#FF6B2B" stopOpacity=".22" /><stop offset="100%" stopColor="#FF6B2B" stopOpacity="0" /></linearGradient>
+        <linearGradient id="lGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="#38BDF8" /><stop offset="50%" stopColor="#FF6B2B" /><stop offset="100%" stopColor="#FB923C" /></linearGradient>
+      </defs>
+      {gridLines.map((val, i) => { const y = PAD.t + (i / 4) * ch; return (<g key={i}><line x1={PAD.l} y1={y} x2={W - PAD.r} y2={y} stroke="#F1F5F9" strokeWidth="1" /><text x={PAD.l - 6} y={y + 4} textAnchor="end" fontSize="9" fill="#94A3B8">{val >= 1000 ? `${(val / 1000).toFixed(1)}k` : val}</text></g>); })}
+      {pts.filter((_, i) => i % 4 === 0 || i === pts.length - 1).map((p, i) => <text key={i} x={p.x} y={H - 6} textAnchor="middle" fontSize="9" fill="#94A3B8">{p.day}</text>)}
+      <path d={area} fill="url(#vGrad)" />
+      <path d={path} fill="none" stroke="url(#lGrad)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      {pts.map((p, i) => (
+        <g key={i} onMouseEnter={() => setTooltip(p)} style={{ cursor: "pointer" }}>
+          <circle cx={p.x} cy={p.y} r="10" fill="transparent" />
+          <circle cx={p.x} cy={p.y} r={tooltip?.day === p.day ? 4 : 2.5} fill={tooltip?.day === p.day ? "#FF6B2B" : "#fff"} stroke={tooltip?.day === p.day ? "#FF6B2B" : "#CBD5E1"} strokeWidth="1.5" style={{ transition: "r .12s" }} />
+        </g>
+      ))}
+      {tooltip && (() => { const tx = Math.min(Math.max(tooltip.x, 60), W - 60), ty = tooltip.y - 36; return (<g><rect x={tx - 36} y={ty} width={72} height={26} rx={6} fill="#1E293B" /><text x={tx} y={ty + 11} textAnchor="middle" fontSize="9" fill="#94A3B8">Ngày {tooltip.day}</text><text x={tx} y={ty + 22} textAnchor="middle" fontSize="10" fill="white" fontWeight="600">{tooltip.v.toLocaleString()} lượt</text></g>); })()}
+    </svg>
   );
 };
 
-// ─── TABS CONFIG ──────────────────────────────────────────────────────────────
-const TABS = [
-  { id: "stats",    label: "Thống kê",      shortLabel: "Thống kê",   icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 20V10M12 20V4M6 20v-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg> },
-  { id: "products", label: "Sản phẩm",      shortLabel: "Sản phẩm",   icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke="currentColor" strokeWidth="2"/><polyline points="3.27 6.96 12 12.01 20.73 6.96" stroke="currentColor" strokeWidth="2"/><line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" strokeWidth="2"/></svg> },
-  { id: "consult",  label: "Yêu cầu tư vấn",shortLabel: "Tư vấn",    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-  { id: "orders",   label: "Đơn hàng",      shortLabel: "Đơn hàng",   icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg> },
-  { id: "customers",label: "Khách hàng",    shortLabel: "Khách",      icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg> },
-];
+// ═══════════════════════════════════════════════════════════════════════════
+// SECTION COMPONENTS
+// ═══════════════════════════════════════════════════════════════════════════
 
-// ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
-const ManagePage = () => {
-  const [activeTab, setActiveTab] = useState("stats");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const [mounted, setMounted] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
-  const tabBarRef = useRef(null);
-
-  useEffect(() => { setTimeout(() => setMounted(true), 80); }, []);
-
+// ─── STATS TAB ────────────────────────────────────────────────────────────────
+const StatsTab = ({ consultations, setActiveTab }) => {
   const totalVisitors = VISITOR_DATA.reduce((s, d) => s + d.v, 0);
   const avgDaily = Math.round(totalVisitors / VISITOR_DATA.length);
   const todayVisitors = VISITOR_DATA[VISITOR_DATA.length - 1].v;
   const growth = Math.round(((VISITOR_DATA[29].v - VISITOR_DATA[0].v) / VISITOR_DATA[0].v) * 100);
+  const pendingConsult = consultations.filter(c => c.status === "pending").length;
+  const processingOrders = MOCK_ORDERS.filter(o => o.status === "processing").length;
 
-  const totalRevenue = "68.600.000₫";
-  const pendingConsult = CONSULTATIONS.filter(c => c.status === "pending").length;
-  const processingOrders = ORDERS.filter(o => o.status === "processing").length;
+  const kpis = [
+    { label: "Lượt truy cập", value: totalVisitors.toLocaleString(), sub: `+${growth}% tháng này`, color: "#38BDF8", bg: "#EFF6FF", data: VISITOR_DATA.slice(-8) },
+    { label: "Doanh thu tháng", value: "68.600.000₫", sub: "6 đơn hoàn thành", color: "#FF6B2B", bg: "#FFF3EE", data: VISITOR_DATA.slice(-8).map(d => ({ ...d, v: d.v * .8 | 0 })) },
+    { label: "Yêu cầu tư vấn", value: consultations.length, sub: `${pendingConsult} chưa xử lý`, color: "#A78BFA", bg: "#F5F3FF", data: VISITOR_DATA.slice(-8).map(d => ({ ...d, v: d.v * .3 | 0 })) },
+    { label: "Đơn hàng tháng", value: MOCK_ORDERS.length, sub: `${processingOrders} đang xử lý`, color: "#10B981", bg: "#ECFDF5", data: VISITOR_DATA.slice(-8).map(d => ({ ...d, v: d.v * .5 | 0 })) },
+  ];
 
-  // scroll active tab into view
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      {/* KPI grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 12 }}>
+        {kpis.map((k, i) => (
+          <div key={i} className="mp-card mp-card-box" style={{ padding: 16, animationDelay: `${i * .07}s` }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
+              <div style={{ width: 38, height: 38, borderRadius: 11, background: k.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>
+                {["👥", "💰", "💬", "📋"][i]}
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 600, color: "#10B981" }}>↑ Tăng</span>
+            </div>
+            <div style={{ fontWeight: 800, color: "#1E293B", fontSize: 20, lineHeight: 1.2 }}>{k.value}</div>
+            <div style={{ fontSize: 11, color: "#94A3B8", marginTop: 2, marginBottom: 10 }}>{k.label}</div>
+            <MiniChart data={k.data} color={k.color} />
+            <div style={{ fontSize: 11, marginTop: 5, fontWeight: 600, color: k.color }}>{k.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Visitor chart */}
+      <div className="mp-card mp-card-box" style={{ padding: 20, animationDelay: ".28s" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: 10, marginBottom: 16 }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div className="mp-live" style={{ width: 8, height: 8, borderRadius: "50%", background: "#34D399" }} />
+              <span style={{ fontWeight: 700, color: "#1E293B", fontSize: 14 }}>Lượt truy cập tháng 3/2026</span>
+            </div>
+            <p style={{ margin: "3px 0 0", fontSize: 12, color: "#94A3B8" }}>Theo dõi khách truy cập hàng ngày</p>
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {[["Hôm nay", todayVisitors.toLocaleString(), "#FF6B2B"], ["TB/ngày", avgDaily.toLocaleString(), "#38BDF8"], ["Tổng", (totalVisitors / 1000).toFixed(1) + "k", "#A78BFA"]].map(([l, v, c]) => (
+              <div key={l} style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 11px", borderRadius: 9, background: "#F8FAFC", fontSize: 12 }}>
+                <div style={{ width: 7, height: 7, borderRadius: "50%", background: c }} />
+                <span style={{ color: "#64748B" }}>{l}:</span>
+                <span style={{ fontWeight: 700, color: c }}>{v}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <VisitorChart data={VISITOR_DATA} />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginTop: 16, paddingTop: 16, borderTop: "1px solid #F1F5F9" }}>
+          {[["Khách mới", 68, "#FF6B2B"], ["Quay lại", 32, "#38BDF8"], ["Từ Mobile", 74, "#A78BFA"]].map(([l, p, c]) => (
+            <div key={l}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 5 }}>
+                <span style={{ color: "#64748B" }}>{l}</span>
+                <span style={{ fontWeight: 600, color: c }}>{p}%</span>
+              </div>
+              <div style={{ height: 5, borderRadius: 999, background: "#E2E8F0" }}>
+                <div style={{ width: `${p}%`, height: "100%", borderRadius: 999, background: c }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Recent orders + top products */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16 }}>
+        <div className="mp-card mp-card-box" style={{ padding: 18, animationDelay: ".35s" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+            <span style={{ fontWeight: 700, color: "#1E293B", fontSize: 14 }}>Đơn hàng gần đây</span>
+            <button className="mp-btn mp-btn-ghost" style={{ fontSize: 12, fontWeight: 500, color: "#38BDF8", padding: "4px 8px" }} onClick={() => setActiveTab("orders")}>Xem tất cả →</button>
+          </div>
+          {MOCK_ORDERS.slice(0, 4).map(o => (
+            <div key={o.id} style={{ display: "flex", alignItems: "center", gap: 11, padding: "8px 0", borderBottom: "1px solid #F8FAFC" }}>
+              <div style={{ width: 32, height: 32, borderRadius: 9, background: "linear-gradient(135deg,#FF6B2B,#38BDF8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: "white", flexShrink: 0 }}>{o.customer.charAt(0)}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: "#334155", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{o.customer}</div>
+                <div style={{ fontSize: 11, color: "#94A3B8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{o.service}</div>
+              </div>
+              <div style={{ textAlign: "right", flexShrink: 0 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#334155", marginBottom: 3 }}>{o.amount}</div>
+                <Badge status={o.status} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── CATEGORIES TAB ───────────────────────────────────────────────────────────
+const CategoriesTab = ({ categories, products, addCategory, removeCategory, openModal }) => {
+  const [confirm, setConfirm] = useState(null);
+
+  const handleDelete = (cat) => {
+    setConfirm({
+      message: `Xoá danh mục "${cat.name}"? Thao tác này không thể hoàn tác.`,
+      onConfirm: () => { removeCategory(cat.id); setConfirm(null); },
+    });
+  };
+
+  const countProducts = (id) => products.filter(p => p.categoryId === id).length;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      {confirm && <ConfirmDialog {...confirm} onCancel={() => setConfirm(null)} />}
+
+      {/* Summary pill */}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div className="mp-chip" style={{ background: "white", color: "#FF6B2B", fontSize: 12, padding: "6px 14px", boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
+          <strong>{categories.length}</strong>&nbsp;danh mục
+        </div>
+      </div>
+
+      {/* Mobile cards (always visible on small screens) */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {categories.map((cat, i) => {
+          const cnt = countProducts(cat.id);
+          return (
+            <div key={cat.id} className="mp-mcard mp-card" style={{ animationDelay: `${i * .05}s` }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 12, background: "linear-gradient(135deg,#FFF3EE,#EFF6FF)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>🗂️</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, color: "#1E293B", fontSize: 14 }}>{cat.name}</div>
+                  <div className="mp-mono" style={{ marginTop: 2 }}>{cat.id}</div>
+                </div>
+                <span className="mp-chip" style={{ background: cnt > 0 ? "#EFF6FF" : "#F1F5F9", color: cnt > 0 ? "#38BDF8" : "#94A3B8", flexShrink: 0 }}>{cnt} SP</span>
+              </div>
+              <div style={{ display: "flex", gap: 8, marginTop: 12, paddingTop: 12, borderTop: "1px solid #F1F5F9" }}>
+                <button className="mp-btn mp-btn-sky" style={{ flex: 1, padding: "9px", fontSize: 13 }} onClick={() => openModal("category", "edit", { ...cat })}>✏️ Sửa</button>
+                <button className="mp-btn mp-btn-danger" style={{ flex: 1, padding: "9px", fontSize: 13 }} onClick={() => handleDelete(cat)}>🗑️ Xoá</button>
+              </div>
+            </div>
+          );
+        })}
+
+        {categories.length === 0 && (
+          <div style={{ textAlign: "center", padding: "40px 20px", color: "#94A3B8", fontSize: 14 }}>
+            <div style={{ fontSize: 36, marginBottom: 8 }}>🗂️</div>
+            Chưa có danh mục nào. Thêm mới ngay!
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ─── PRODUCT TYPES TAB ────────────────────────────────────────────────────────
+const ProductTypesTab = ({ productTypes, products, addProductType, removeProductType, openModal }) => {
+  const [confirm, setConfirm] = useState(null);
+
+  const handleDelete = (pt) => {
+    setConfirm({
+      message: `Xoá loại sản phẩm "${pt.name}"? Thao tác này không thể hoàn tác.`,
+      onConfirm: () => { removeProductType(pt.id); setConfirm(null); },
+    });
+  };
+
+  const countProducts = (id) => products.filter(p => p.productTypeId === id).length;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      {confirm && <ConfirmDialog {...confirm} onCancel={() => setConfirm(null)} />}
+
+      <div style={{ display: "flex", gap: 8 }}>
+        <div className="mp-chip" style={{ background: "white", color: "#A78BFA", fontSize: 12, padding: "6px 14px", boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
+          <strong>{productTypes.length}</strong>&nbsp;loại sản phẩm
+        </div>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {productTypes.map((pt, i) => {
+          const cnt = countProducts(pt.id);
+          return (
+            <div key={pt.id} className="mp-mcard mp-card" style={{ animationDelay: `${i * .05}s` }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 12, background: "#F5F3FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>📦</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
+                    <div style={{ fontWeight: 700, color: "#1E293B", fontSize: 14 }}>{pt.name}</div>
+                    <span className="mp-chip" style={{ background: cnt > 0 ? "#F5F3FF" : "#F1F5F9", color: cnt > 0 ? "#A78BFA" : "#94A3B8" }}>{cnt} SP</span>
+                  </div>
+                  <div className="mp-mono" style={{ marginTop: 2 }}>{pt.id}</div>
+                  {pt.description && (
+                    <p style={{ fontSize: 12, color: "#64748B", margin: "6px 0 0", lineHeight: 1.55 }}>{pt.description}</p>
+                  )}
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 8, marginTop: 12, paddingTop: 12, borderTop: "1px solid #F1F5F9" }}>
+                <button className="mp-btn mp-btn-sky" style={{ flex: 1, padding: "9px", fontSize: 13 }} onClick={() => openModal("producttype", "edit", { ...pt })}>✏️ Sửa</button>
+                <button className="mp-btn mp-btn-danger" style={{ flex: 1, padding: "9px", fontSize: 13 }} onClick={() => handleDelete(pt)}>🗑️ Xoá</button>
+              </div>
+            </div>
+          );
+        })}
+
+        {productTypes.length === 0 && (
+          <div style={{ textAlign: "center", padding: "40px 20px", color: "#94A3B8", fontSize: 14 }}>
+            <div style={{ fontSize: 36, marginBottom: 8 }}>📦</div>
+            Chưa có loại sản phẩm nào. Thêm mới ngay!
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ─── PRODUCTS TAB ─────────────────────────────────────────────────────────────
+const ProductsTab = ({ products, setProducts, categories, productTypes, openModal }) => {
+  const [confirm, setConfirm] = useState(null);
+  const [filterCat, setFilterCat] = useState("all");
+
+  const getCategoryName = (id) => categories.find(c => c.id === id)?.name || "—";
+  const getTypeName = (id) => productTypes.find(t => t.id === id)?.name || "—";
+
+  const filtered = filterCat === "all" ? products : products.filter(p => p.categoryId === filterCat);
+
+  const handleDelete = (p) => setConfirm({
+    message: `Xoá sản phẩm "${p.name}"?`,
+    onConfirm: () => { setProducts(prev => prev.filter(x => x.id !== p.id)); setConfirm(null); },
+  });
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      {confirm && <ConfirmDialog {...confirm} onCancel={() => setConfirm(null)} />}
+
+      {/* Filter chips */}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {[{ id: "all", name: `Tất cả (${products.length})` }, ...categories.map(c => ({ id: c.id, name: `${c.name} (${products.filter(p => p.categoryId === c.id).length})` }))].map(c => (
+          <button key={c.id} onClick={() => setFilterCat(c.id)} className="mp-btn" style={{ padding: "6px 14px", fontSize: 12, fontWeight: filterCat === c.id ? 700 : 400, background: filterCat === c.id ? "linear-gradient(135deg,#FF6B2B,#F97316)" : "white", color: filterCat === c.id ? "white" : "#64748B", boxShadow: "0 1px 3px rgba(0,0,0,.06)", borderRadius: 10 }}>
+            {c.name}
+          </button>
+        ))}
+      </div>
+
+      {/* Mobile cards */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {filtered.map((p, i) => (
+          <div key={p.id} className="mp-mcard mp-card" style={{ animationDelay: `${i * .04}s` }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 11, marginBottom: 10 }}>
+              <div style={{ width: 42, height: 42, borderRadius: 12, background: "linear-gradient(135deg,#FFF3EE,#EFF6FF)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>🛍️</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 700, color: "#1E293B", fontSize: 14, lineHeight: 1.3 }}>{p.name}</div>
+                <div className="mp-mono" style={{ marginTop: 2 }}>{p.id}</div>
+              </div>
+            </div>
+
+            {p.description && <p style={{ fontSize: 12, color: "#64748B", margin: "0 0 10px", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{p.description}</p>}
+
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
+              <span className="mp-chip" style={{ background: "#EFF6FF", color: "#38BDF8" }}>{getCategoryName(p.categoryId)}</span>
+              <span className="mp-chip" style={{ background: "#F5F3FF", color: "#A78BFA" }}>{getTypeName(p.productTypeId)}</span>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, paddingTop: 10, borderTop: "1px solid #F1F5F9" }}>
+              <div>
+                <div style={{ fontSize: 10, color: "#94A3B8", marginBottom: 2 }}>Giá từ</div>
+                <div style={{ fontWeight: 700, fontSize: 13, color: "#FF6B2B" }}>{formatPrice(p.minPrice)}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 10, color: "#94A3B8", marginBottom: 2 }}>Đến</div>
+                <div style={{ fontWeight: 700, fontSize: 13, color: "#64748B" }}>{formatPrice(p.maxPrice)}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 10, color: "#94A3B8", marginBottom: 2 }}>MOQ</div>
+                <div style={{ fontWeight: 700, fontSize: 14, color: "#475569" }}>{p.MOQ}</div>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+              <button className="mp-btn mp-btn-sky" style={{ flex: 1, padding: "9px", fontSize: 13 }} onClick={() => openModal("product", "edit", { ...p })}>✏️ Sửa</button>
+              <button className="mp-btn mp-btn-danger" style={{ flex: 1, padding: "9px", fontSize: 13 }} onClick={() => handleDelete(p)}>🗑️ Xoá</button>
+            </div>
+          </div>
+        ))}
+
+        {filtered.length === 0 && (
+          <div style={{ textAlign: "center", padding: "40px 20px", color: "#94A3B8", fontSize: 14 }}>
+            <div style={{ fontSize: 36, marginBottom: 8 }}>🛍️</div>
+            Không tìm thấy sản phẩm nào.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ─── CONSULT TAB ──────────────────────────────────────────────────────────────
+const ConsultTab = ({ consultations, setConsultations }) => {
+  const [confirm, setConfirm] = useState(null);
+
+  const updateStatus = (id, status) => setConsultations(prev => prev.map(c => c.id === id ? { ...c, status } : c));
+  const handleDelete = (c) => setConfirm({
+    message: `Xoá yêu cầu ${c.id}?`,
+    onConfirm: () => { setConsultations(prev => prev.filter(x => x.id !== c.id)); setConfirm(null); },
+  });
+
+  const tabs = [
+    { label: "Tất cả", count: consultations.length, filter: null },
+    { label: "Chưa TV", count: consultations.filter(c => c.status === "pending").length, filter: "pending", alert: true },
+    { label: "Đã TV", count: consultations.filter(c => c.status === "done").length, filter: "done" },
+    { label: "Huỷ", count: consultations.filter(c => c.status === "cancelled").length, filter: "cancelled" },
+  ];
+  const [activeFilter, setActiveFilter] = useState(null);
+  const filtered = activeFilter ? consultations.filter(c => c.status === activeFilter) : consultations;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      {confirm && <ConfirmDialog {...confirm} onCancel={() => setConfirm(null)} />}
+
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {tabs.map(t => (
+          <button key={t.label} onClick={() => setActiveFilter(t.filter)} className="mp-btn" style={{ padding: "6px 14px", fontSize: 12, fontWeight: activeFilter === t.filter ? 700 : 400, background: activeFilter === t.filter ? (t.alert ? "linear-gradient(135deg,#FF6B2B,#F97316)" : "linear-gradient(135deg,#38BDF8,#0EA5E9)") : (t.alert && t.count > 0 ? "#FFF3EE" : "white"), color: activeFilter === t.filter ? "white" : (t.alert && t.count > 0 ? "#FF6B2B" : "#64748B"), boxShadow: "0 1px 3px rgba(0,0,0,.06)", borderRadius: 10 }}>
+            {t.label} <span style={{ fontWeight: 700 }}>{t.count}</span>
+          </button>
+        ))}
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {filtered.map((c, i) => (
+          <div key={c.id} className="mp-mcard mp-card" style={{ animationDelay: `${i * .04}s`, borderLeft: c.status === "pending" ? "3px solid #FF6B2B" : "3px solid transparent" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 700, color: "#1E293B", fontSize: 15 }}>{c.phone}</div>
+                <div style={{ fontSize: 12, color: c.email ? "#64748B" : "#CBD5E1", marginTop: 3 }}>{c.email || "Không có email"}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 5 }}>
+                  <span className="mp-mono">{c.id}</span>
+                  <span style={{ fontSize: 11, color: "#94A3B8" }}>{c.createdAt}</span>
+                </div>
+              </div>
+              <Badge status={c.status} />
+            </div>
+
+            {c.status === "pending" && (
+              <div style={{ display: "flex", gap: 8, marginTop: 12, paddingTop: 12, borderTop: "1px solid #F1F5F9" }}>
+                <button className="mp-btn mp-btn-primary" style={{ flex: 1, padding: "10px", fontSize: 13 }} onClick={() => updateStatus(c.id, "done")}>✅ Đã tư vấn</button>
+                <button className="mp-btn mp-btn-danger" style={{ flex: 1, padding: "10px", fontSize: 13 }} onClick={() => updateStatus(c.id, "cancelled")}>✖ Huỷ</button>
+              </div>
+            )}
+
+            <button className="mp-btn mp-btn-ghost mp-icon-btn" style={{ position: "absolute", top: 14, right: 14, opacity: .6 }} onClick={() => handleDelete(c)}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="2" /><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" strokeWidth="2" /></svg>
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ─── ORDERS TAB ───────────────────────────────────────────────────────────────
+const OrdersTab = () => {
+  const processingOrders = MOCK_ORDERS.filter(o => o.status === "processing").length;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 }}>
+        {[["Đang xử lý", processingOrders, "#FF6B2B"], ["Hoàn thành", MOCK_ORDERS.filter(o => o.status === "done").length, "#10B981"], ["Đã huỷ", MOCK_ORDERS.filter(o => o.status === "cancelled").length, "#EF4444"]].map(([l, v, c]) => (
+          <div key={l} className="mp-card-box" style={{ padding: "14px 12px", textAlign: "center", borderRadius: 14 }}>
+            <div style={{ fontSize: 28, fontWeight: 800, color: c }}>{v}</div>
+            <div style={{ fontSize: 12, color: "#64748B", marginTop: 2 }}>{l}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {MOCK_ORDERS.map((o, i) => (
+          <div key={o.id} className="mp-mcard mp-card" style={{ animationDelay: `${i * .04}s`, position: "relative" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+              <div>
+                <div style={{ fontWeight: 700, color: "#1E293B", fontSize: 14 }}>{o.customer}</div>
+                <div className="mp-mono" style={{ marginTop: 2 }}>{o.id}</div>
+              </div>
+              <Badge status={o.status} />
+            </div>
+            <div style={{ fontSize: 12, color: "#64748B", marginBottom: 10, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{o.service}</div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 10, borderTop: "1px solid #F1F5F9" }}>
+              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <span className="mp-chip" style={{ background: "#F0FDF4", color: "#16A34A" }}>{o.payment}</span>
+                <span style={{ fontSize: 11, color: "#94A3B8" }}>{o.date}</span>
+              </div>
+              <span style={{ fontWeight: 700, fontSize: 15, color: "#FF6B2B" }}>{o.amount}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ─── CUSTOMERS TAB ────────────────────────────────────────────────────────────
+const CustomersTab = () => (
+  <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+      {[["Tổng", MOCK_CUSTOMERS.length, "#64748B"], ["Platinum", MOCK_CUSTOMERS.filter(c => c.tier === "platinum").length, "#7C3AED"], ["Gold", MOCK_CUSTOMERS.filter(c => c.tier === "gold").length, "#D97706"], ["Mới", MOCK_CUSTOMERS.filter(c => c.tier === "new").length, "#0EA5E9"]].map(([l, v, c]) => (
+        <div key={l} className="mp-chip" style={{ background: "white", color: c, fontSize: 12, padding: "6px 14px", boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
+          <strong>{v}</strong>&nbsp;{l}
+        </div>
+      ))}
+    </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      {MOCK_CUSTOMERS.map((c, i) => {
+        const tier = TIER_CONFIG[c.tier];
+        return (
+          <div key={c.id} className="mp-mcard mp-card" style={{ animationDelay: `${i * .04}s` }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+              <div style={{ width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(135deg,#FF6B2B,#38BDF8)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontWeight: 700, color: "white", flexShrink: 0 }}>{c.name.charAt(0)}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 700, color: "#1E293B", fontSize: 14, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</div>
+                <div style={{ fontSize: 12, color: "#64748B" }}>{c.phone}</div>
+              </div>
+              <span className="mp-chip" style={{ background: tier.bg, color: tier.text, flexShrink: 0 }}>{tier.icon} {tier.label}</span>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, paddingTop: 12, borderTop: "1px solid #F1F5F9" }}>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontWeight: 700, color: "#334155", fontSize: 18 }}>{c.orders}</div>
+                <div style={{ fontSize: 11, color: "#94A3B8" }}>Đơn hàng</div>
+              </div>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontWeight: 700, fontSize: 12, color: "#FF6B2B" }}>{c.total}</div>
+                <div style={{ fontSize: 11, color: "#94A3B8" }}>Chi tiêu</div>
+              </div>
+              <div style={{ textAlign: "center" }}>
+                <button className="mp-btn mp-btn-sky" style={{ width: "100%", padding: "7px 0", fontSize: 12 }}>Chi tiết</button>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+);
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FORM MODALS
+// ═══════════════════════════════════════════════════════════════════════════
+const CategoryModal = ({ mode, data, onClose, onSave }) => {
+  const [form, setForm] = useState(data || { name: "" });
+  const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
+  return (
+    <Modal title={mode === "add" ? "➕ Thêm danh mục" : "✏️ Sửa danh mục"} onClose={onClose}>
+      <Field label="Tên danh mục *">
+        <input className="mp-input" value={form.name || ""} onChange={e => set("name", e.target.value)} placeholder="VD: Dịch vụ Web" autoFocus />
+      </Field>
+      <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+        <button className="mp-btn mp-btn-outline" style={{ flex: 1, padding: "11px" }} onClick={onClose}>Huỷ</button>
+        <button className="mp-btn mp-btn-primary" style={{ flex: 2, padding: "11px", fontSize: 14 }} onClick={() => onSave(form)} disabled={!form.name?.trim()}>
+          {mode === "add" ? "Thêm mới" : "Lưu thay đổi"}
+        </button>
+      </div>
+    </Modal>
+  );
+};
+
+const ProductTypeModal = ({ mode, data, onClose, onSave }) => {
+  const [form, setForm] = useState(data || { name: "", description: "" });
+  const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
+  return (
+    <Modal title={mode === "add" ? "➕ Thêm loại sản phẩm" : "✏️ Sửa loại sản phẩm"} onClose={onClose}>
+      <Field label="Tên loại sản phẩm *">
+        <input className="mp-input" value={form.name || ""} onChange={e => set("name", e.target.value)} placeholder="VD: Dịch vụ theo dự án" autoFocus />
+      </Field>
+      <Field label="Mô tả">
+        <textarea className="mp-input" value={form.description || ""} onChange={e => set("description", e.target.value)} placeholder="Mô tả ngắn..." style={{ minHeight: 84, resize: "vertical" }} />
+      </Field>
+      <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+        <button className="mp-btn mp-btn-outline" style={{ flex: 1, padding: "11px" }} onClick={onClose}>Huỷ</button>
+        <button className="mp-btn mp-btn-primary" style={{ flex: 2, padding: "11px", fontSize: 14 }} onClick={() => onSave(form)} disabled={!form.name?.trim()}>
+          {mode === "add" ? "Thêm mới" : "Lưu thay đổi"}
+        </button>
+      </div>
+    </Modal>
+  );
+};
+
+const ProductModal = ({ mode, data, categories, productTypes, onClose, onSave }) => {
+  const [form, setForm] = useState(data || { name: "", description: "", minPrice: "", maxPrice: "", MOQ: 1, categoryId: categories[0]?.id || "", productTypeId: productTypes[0]?.id || "" });
+  const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
+  return (
+    <Modal title={mode === "add" ? "➕ Thêm sản phẩm" : "✏️ Sửa sản phẩm"} onClose={onClose} wide>
+      <Field label="Tên sản phẩm *">
+        <input className="mp-input" value={form.name || ""} onChange={e => set("name", e.target.value)} placeholder="Tên sản phẩm / dịch vụ" autoFocus />
+      </Field>
+      <Field label="Mô tả">
+        <textarea className="mp-input" value={form.description || ""} onChange={e => set("description", e.target.value)} placeholder="Mô tả chi tiết..." style={{ minHeight: 72, resize: "vertical" }} />
+      </Field>
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <Field label="Giá thấp nhất (₫)" half>
+          <input className="mp-input" type="number" value={form.minPrice || ""} onChange={e => set("minPrice", e.target.value)} placeholder="0" />
+        </Field>
+        <Field label="Giá cao nhất (₫)" half>
+          <input className="mp-input" type="number" value={form.maxPrice || ""} onChange={e => set("maxPrice", e.target.value)} placeholder="0" />
+        </Field>
+        <Field label="MOQ" half>
+          <input className="mp-input" type="number" value={form.MOQ || 1} onChange={e => set("MOQ", e.target.value)} placeholder="1" />
+        </Field>
+      </div>
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <Field label="Danh mục" half>
+          <select className="mp-input mp-select" value={form.categoryId || ""} onChange={e => set("categoryId", e.target.value)}>
+            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+        </Field>
+        <Field label="Loại sản phẩm" half>
+          <select className="mp-input mp-select" value={form.productTypeId || ""} onChange={e => set("productTypeId", e.target.value)}>
+            {productTypes.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+          </select>
+        </Field>
+      </div>
+      <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+        <button className="mp-btn mp-btn-outline" style={{ flex: 1, padding: "11px" }} onClick={onClose}>Huỷ</button>
+        <button className="mp-btn mp-btn-primary" style={{ flex: 2, padding: "11px", fontSize: 14 }} onClick={() => onSave(form)} disabled={!form.name?.trim()}>
+          {mode === "add" ? "Thêm mới" : "Lưu thay đổi"}
+        </button>
+      </div>
+    </Modal>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SIDEBAR & TOPBAR
+// ═══════════════════════════════════════════════════════════════════════════
+const Logo = () => (
+  <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
+    <div style={{ width: 38, height: 38, borderRadius: 11, background: "linear-gradient(135deg,#FF6B2B,#F97316)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(255,107,43,.3)", flexShrink: 0 }}>
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity=".9" /><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg>
+    </div>
+    <div>
+      <div style={{ fontWeight: 700, color: "#1E293B", fontSize: 14, lineHeight: 1.2 }}>DAN Platform</div>
+      <div style={{ fontSize: 11, color: "#94A3B8" }}>Admin Panel</div>
+    </div>
+  </div>
+);
+
+const ProfileChip = ({ collapsed }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 12, background: "#F8FAFC" }}>
+    <div style={{ width: 34, height: 34, borderRadius: "50%", background: "linear-gradient(135deg,#38BDF8,#0EA5E9)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, color: "white", flexShrink: 0 }}>Đ</div>
+    {!collapsed && (
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: "#334155", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>Admin Đan</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+          <div className="mp-live" style={{ width: 6, height: 6, borderRadius: "50%", background: "#34D399" }} />
+          <span style={{ fontSize: 11, color: "#94A3B8" }}>Đang hoạt động</span>
+        </div>
+      </div>
+    )}
+  </div>
+);
+
+const SidebarNav = ({ activeTab, setActiveTab, pendingConsult, processingOrders, onItemClick }) => (
+  <nav style={{ flex: 1, padding: "12px", overflowY: "auto" }} className="mp-scroll">
+    <p style={{ fontSize: 10, fontWeight: 600, color: "#94A3B8", padding: "0 10px", marginBottom: 10, letterSpacing: ".1em", textTransform: "uppercase" }}>Menu chính</p>
+    {TABS.map(tab => {
+      const isActive = activeTab === tab.id;
+      const badge = tab.id === "consult" ? pendingConsult : tab.id === "orders" ? processingOrders : 0;
+      return (
+        <button key={tab.id} onClick={() => { setActiveTab(tab.id); onItemClick?.(); }} style={{ width: "100%", display: "flex", alignItems: "center", gap: 11, padding: "10px 12px", borderRadius: 11, border: "none", cursor: "pointer", background: isActive ? "linear-gradient(135deg,rgba(255,107,43,.1),rgba(56,189,248,.07))" : "transparent", color: isActive ? "#FF6B2B" : "#64748B", fontWeight: isActive ? 600 : 400, fontSize: 14, fontFamily: "inherit", textAlign: "left", transition: "background .12s, color .12s", marginBottom: 2 }}>
+          <span style={{ fontSize: 16 }}>{tab.icon}</span>
+          <span style={{ flex: 1 }}>{tab.label}</span>
+          {badge > 0 && <span style={{ background: "#FF6B2B", color: "white", fontSize: 9, fontWeight: 700, width: 18, height: 18, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>{badge}</span>}
+        </button>
+      );
+    })}
+  </nav>
+);
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MAIN PAGE
+// ═══════════════════════════════════════════════════════════════════════════
+const ManagePage = () => {
+  const [activeTab, setActiveTab] = useState("stats");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [mounted, setMounted] = useState(false);
+  const [modal, setModal] = useState(null); // { type, mode, data }
+
+  const tabBarRef = useRef(null);
+
+  // Local state
+  const [products, setProducts] = useState(MOCK_PRODUCTS);
+  const [consultations, setConsultations] = useState(MOCK_CONSULTATIONS);
+
+  // Store
+  const { categories, fetchCategories, addCategory, removeCategory } = useCategoriesStore();
+  const { productTypes, fetchProductTypes, addProductType, removeProductType } = useProductStore();
+
+  useEffect(() => { setTimeout(() => setMounted(true), 80); }, []);
+
+  useEffect(() => {
+    if (!categories || categories.length === 0) fetchCategories();
+  }, [categories]);
+
+  useEffect(() => {
+    if (!productTypes || productTypes.length === 0) fetchProductTypes();
+  }, [productTypes]);
+
   useEffect(() => {
     const el = tabBarRef.current?.querySelector(`[data-tab="${activeTab}"]`);
     el?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
   }, [activeTab]);
 
+  const pendingConsult = consultations.filter(c => c.status === "pending").length;
+  const processingOrders = MOCK_ORDERS.filter(o => o.status === "processing").length;
+
+  // ── Modal open/save ────────────────────────────────────────────────────
+  const openModal = (type, mode, data = {}) => setModal({ type, mode, data });
+  const closeModal = () => setModal(null);
+
+  const handleSave = (form) => {
+    if (modal.type === "category") {
+      if (modal.mode === "add") {
+        addCategory({ id: `CAT${String((categories?.length || 0) + 1).padStart(3, "0")}`, ...form });
+      } else {
+        // update via store or local patch — keeping existing logic pattern
+        addCategory({ ...modal.data, ...form }); // stores typically handle upsert
+      }
+    } else if (modal.type === "producttype") {
+      if (modal.mode === "add") {
+        addProductType({ id: `PT${String((productTypes?.length || 0) + 1).padStart(3, "0")}`, ...form });
+      } else {
+        addProductType({ ...modal.data, ...form });
+      }
+    } else if (modal.type === "product") {
+      const now = new Date().toISOString().split("T")[0];
+      if (modal.mode === "add") {
+        setProducts(prev => [...prev, { id: `SP${String(prev.length + 1).padStart(3, "0")}`, images: [], createdAt: now, updatedAt: now, ...form, minPrice: Number(form.minPrice) || 0, maxPrice: Number(form.maxPrice) || 0, MOQ: Number(form.MOQ) || 1 }]);
+      } else {
+        setProducts(prev => prev.map(p => p.id === modal.data.id ? { ...p, ...form, minPrice: Number(form.minPrice), maxPrice: Number(form.maxPrice), MOQ: Number(form.MOQ), updatedAt: now } : p));
+      }
+    }
+    closeModal();
+  };
+
+  // ── FAB action per tab ─────────────────────────────────────────────────
+  const FAB_ACTIONS = {
+    categories: () => openModal("category", "add"),
+    producttypes: () => openModal("producttype", "add"),
+    products: () => openModal("product", "add"),
+  };
+
+  const tabLabel = TABS.find(t => t.id === activeTab)?.label || "";
+
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
-        `}</style>
+      <style>{GLOBAL_CSS}</style>
 
-      <div className="font-jakarta min-h-screen" style={{ background: "#F0F4F8" }}>
+      <div className="mp" style={{ background: "#F0F4F8", minHeight: "100vh" }}>
+
+        {/* ── MODALS ── */}
+        {modal?.type === "category" && <CategoryModal mode={modal.mode} data={modal.data} onClose={closeModal} onSave={handleSave} />}
+        {modal?.type === "producttype" && <ProductTypeModal mode={modal.mode} data={modal.data} onClose={closeModal} onSave={handleSave} />}
+        {modal?.type === "product" && <ProductModal mode={modal.mode} data={modal.data} categories={categories || []} productTypes={productTypes || []} onClose={closeModal} onSave={handleSave} />}
 
         {/* ── MOBILE SIDEBAR OVERLAY ── */}
         {sidebarOpen && (
-          <div className="lg:hidden fixed inset-0 z-50 flex">
-            <div className="sidebar-overlay absolute inset-0" style={{ background: "rgba(15,23,42,0.4)", backdropFilter: "blur(4px)" }} onClick={() => setSidebarOpen(false)} />
-            <div className="sidebar-panel relative w-72 h-full flex flex-col" style={{ background: "white", boxShadow: "4px 0 24px rgba(0,0,0,0.12)" }}>
-              {/* Sidebar header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg,#FF6B2B,#F97316)" }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                      <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity=".9"/>
-                      <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="font-bold text-slate-800 leading-tight text-sm">DAN Platform</div>
-                    <div className="text-xs text-slate-400">Admin Panel</div>
-                  </div>
-                </div>
-                <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-100 text-slate-400">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+          <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex" }}>
+            <div className="mp-overlay" style={{ position: "absolute", inset: 0, background: "rgba(15,23,42,.42)", backdropFilter: "blur(4px)" }} onClick={() => setSidebarOpen(false)} />
+            <div className="mp-drawer" style={{ position: "relative", width: 280, height: "100%", display: "flex", flexDirection: "column", background: "white", boxShadow: "4px 0 24px rgba(0,0,0,.14)", zIndex: 1 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 18px", borderBottom: "1px solid #F1F5F9" }}>
+                <Logo />
+                <button className="mp-btn mp-btn-ghost mp-icon-btn" onClick={() => setSidebarOpen(false)}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
                 </button>
               </div>
-
-              {/* Nav items */}
-              <div className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-                {TABS.map(tab => (
-                  <button key={tab.id} onClick={() => { setActiveTab(tab.id); setSidebarOpen(false); }}
-                    className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-left transition-all duration-150"
-                    style={{ background: activeTab === tab.id ? "linear-gradient(135deg,rgba(255,107,43,.1),rgba(56,189,248,.08))" : "transparent", color: activeTab === tab.id ? "#FF6B2B" : "#64748B", fontWeight: activeTab === tab.id ? 600 : 400 }}>
-                    <span style={{ color: activeTab === tab.id ? "#FF6B2B" : "#94A3B8" }}>{tab.icon}</span>
-                    <span className="text-sm">{tab.label}</span>
-                    {tab.id === "consult" && pendingConsult > 0 && (
-                      <span className="ml-auto text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: "#FFF3EE", color: "#FF6B2B" }}>{pendingConsult}</span>
-                    )}
-                    {tab.id === "orders" && processingOrders > 0 && (
-                      <span className="ml-auto text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: "#FFF3EE", color: "#FF6B2B" }}>{processingOrders}</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-
-              {/* Admin profile */}
-              <div className="px-4 py-4 border-t border-slate-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ background: "linear-gradient(135deg,#38BDF8,#0EA5E9)" }}>Đ</div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-slate-700 truncate">Admin Đan</div>
-                    <div className="text-xs text-slate-400">Super Admin</div>
-                  </div>
-                  <div className="w-2 h-2 rounded-full bg-emerald-400 live-dot" />
-                </div>
+              <SidebarNav activeTab={activeTab} setActiveTab={setActiveTab} pendingConsult={pendingConsult} processingOrders={processingOrders} onItemClick={() => setSidebarOpen(false)} />
+              <div style={{ padding: "12px" }}>
+                <ProfileChip />
               </div>
             </div>
           </div>
         )}
 
         {/* ── DESKTOP SIDEBAR ── */}
-        <div className="hidden lg:flex fixed left-0 top-0 h-full w-60 xl:w-64 flex-col z-30"
-          style={{ background: "white", borderRight: "1px solid #F1F5F9", boxShadow: "2px 0 12px rgba(0,0,0,.04)" }}>
-          {/* Logo */}
-          <div className="flex items-center gap-3 px-5 py-5 border-b border-slate-100">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "linear-gradient(135deg,#FF6B2B,#F97316)", boxShadow: "0 4px 12px rgba(255,107,43,.3)" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" opacity=".9"/>
-                <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </div>
-            <div>
-              <div className="font-bold text-slate-800">DAN Platform</div>
-              <div className="text-xs text-slate-400">Admin Panel</div>
-            </div>
+        <aside style={{ display: "none", position: "fixed", left: 0, top: 0, height: "100%", width: 232, flexDirection: "column", zIndex: 30, background: "white", borderRight: "1px solid #F1F5F9", boxShadow: "2px 0 12px rgba(0,0,0,.04)" }} className="lg:flex">
+          <div style={{ padding: "18px 16px", borderBottom: "1px solid #F1F5F9" }}>
+            <Logo />
           </div>
-
-          {/* Nav */}
-          <div className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
-            <p className="text-xs font-semibold text-slate-400 px-3 mb-3 tracking-widest uppercase">Menu chính</p>
-            {TABS.map(tab => (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-150"
-                style={{ background: activeTab === tab.id ? "linear-gradient(135deg,rgba(255,107,43,.1),rgba(56,189,248,.07))" : "transparent", color: activeTab === tab.id ? "#FF6B2B" : "#64748B", fontWeight: activeTab === tab.id ? 600 : 400 }}>
-                <span style={{ color: activeTab === tab.id ? "#FF6B2B" : "#94A3B8" }}>{tab.icon}</span>
-                <span className="text-sm">{tab.label}</span>
-                {tab.id === "consult" && pendingConsult > 0 && (
-                  <span className="ml-auto text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold" style={{ background: "#FF6B2B", color: "white" }}>{pendingConsult}</span>
-                )}
-                {tab.id === "orders" && processingOrders > 0 && (
-                  <span className="ml-auto text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold" style={{ background: "#FF6B2B", color: "white" }}>{processingOrders}</span>
-                )}
-              </button>
-            ))}
+          <SidebarNav activeTab={activeTab} setActiveTab={setActiveTab} pendingConsult={pendingConsult} processingOrders={processingOrders} />
+          <div style={{ padding: "0 12px 12px" }}>
+            <ProfileChip />
           </div>
-
-          {/* Profile */}
-          <div className="px-4 py-4 border-t border-slate-100 mx-3 mb-3 rounded-xl" style={{ background: "#F8FAFC" }}>
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0" style={{ background: "linear-gradient(135deg,#38BDF8,#0EA5E9)" }}>Đ</div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-slate-700 truncate">Admin Đan</div>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 live-dot" />
-                  <span className="text-xs text-slate-400">Đang hoạt động</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        </aside>
 
         {/* ── MAIN CONTENT ── */}
-        <div className="lg:ml-60 xl:ml-64 flex flex-col min-h-screen">
+        <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }} className="lg:ml-232">
 
-          {/* Top bar */}
-          <header className="sticky top-0 z-20 flex items-center gap-3 px-4 lg:px-6 py-3.5"
-            style={{ background: "rgba(240,244,248,0.92)", backdropFilter: "blur(12px)", borderBottom: "1px solid rgba(241,245,249,0.8)" }}>
-            {/* Hamburger (mobile) */}
-            <button onClick={() => setSidebarOpen(true)} className="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl bg-white card-shadow text-slate-600 flex-shrink-0">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+          {/* TOP BAR */}
+          <header style={{ position: "sticky", top: 0, zIndex: 20, display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "rgba(240,244,248,.94)", backdropFilter: "blur(14px)", borderBottom: "1px solid rgba(241,245,249,.8)" }}>
+            {/* Hamburger */}
+            <button className="mp-btn mp-btn-ghost" style={{ width: 36, height: 36, borderRadius: 10, background: "white", boxShadow: "0 1px 3px rgba(0,0,0,.06)", flexShrink: 0, padding: 0 }} onClick={() => setSidebarOpen(true)}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
             </button>
 
             {/* Search */}
-            <div className="flex-1 relative max-w-sm">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
-                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            <div style={{ flex: 1, maxWidth: 340, position: "relative" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                <circle cx="11" cy="11" r="8" stroke="#94A3B8" strokeWidth="2" /><path d="M21 21l-4.35-4.35" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" />
               </svg>
-              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm kiếm..." className="search-input w-full pl-9 pr-4 py-2.5 text-sm rounded-xl bg-white border border-slate-200 text-slate-700 placeholder-slate-400" style={{ transition: "all .2s" }} />
+              <input className="mp-input mp-search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm kiếm..." style={{ paddingLeft: 34, paddingRight: 12, paddingTop: 9, paddingBottom: 9 }} />
             </div>
 
-            <div className="ml-auto flex items-center gap-2">
-              {/* Date */}
-              <div className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white card-shadow text-xs text-slate-500">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#94A3B8" strokeWidth="2"/><line x1="16" y1="2" x2="16" y2="6" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"/><line x1="8" y1="2" x2="8" y2="6" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"/><line x1="3" y1="10" x2="21" y2="10" stroke="#94A3B8" strokeWidth="2"/></svg>
-                <span>Tháng 3, 2026</span>
-              </div>
-
+            <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
               {/* Notif */}
-              <div className="relative">
-                <button onClick={() => setNotifOpen(!notifOpen)}
-                  className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-white card-shadow text-slate-500">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
-                  {(pendingConsult + processingOrders) > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-white text-xs flex items-center justify-center font-bold" style={{ background: "#FF6B2B", fontSize: 9 }}>{pendingConsult + processingOrders}</span>
-                  )}
+              <div style={{ position: "relative" }}>
+                <button className="mp-btn mp-btn-ghost" style={{ width: 36, height: 36, borderRadius: 10, background: "white", position: "relative", boxShadow: "0 1px 3px rgba(0,0,0,.06)", padding: 0 }} onClick={() => setNotifOpen(!notifOpen)}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                  {(pendingConsult + processingOrders) > 0 && <span style={{ position: "absolute", top: -4, right: -4, width: 16, height: 16, borderRadius: "50%", background: "#FF6B2B", color: "white", fontSize: 9, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{pendingConsult + processingOrders}</span>}
                 </button>
                 {notifOpen && (
-                  <div className="notif-panel absolute right-0 top-12 w-72 bg-white rounded-2xl card-shadow-md overflow-hidden z-50" style={{ border: "1px solid #F1F5F9" }}>
-                    <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-                      <span className="font-semibold text-slate-700 text-sm">Thông báo</span>
-                      <span className="text-xs text-slate-400 cursor-pointer hover:text-sky-500">Đánh dấu đã đọc</span>
+                  <div className="mp-notif-panel" style={{ position: "absolute", right: 0, top: 46, width: 276, background: "white", borderRadius: 15, overflow: "hidden", zIndex: 50, boxShadow: "0 4px 20px rgba(0,0,0,.1)", border: "1px solid #F1F5F9" }}>
+                    <div style={{ padding: "12px 16px", borderBottom: "1px solid #F1F5F9", display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ fontWeight: 700, color: "#1E293B", fontSize: 13 }}>Thông báo</span>
+                      <span style={{ fontSize: 11, color: "#94A3B8", cursor: "pointer" }}>Đánh dấu đã đọc</span>
                     </div>
                     {pendingConsult > 0 && (
-                      <div className="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 cursor-pointer border-b border-slate-50" onClick={() => { setActiveTab("consult"); setNotifOpen(false); }}>
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#FFF3EE" }}>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#FF6B2B" strokeWidth="2"/></svg>
-                        </div>
+                      <div style={{ display: "flex", gap: 11, padding: "12px 16px", cursor: "pointer" }} onClick={() => { setActiveTab("consult"); setNotifOpen(false); }}>
+                        <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#FFF3EE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>💬</div>
                         <div>
-                          <p className="text-xs font-semibold text-slate-700">{pendingConsult} yêu cầu tư vấn đang chờ</p>
-                          <p className="text-xs text-slate-400 mt-0.5">Cần xử lý sớm</p>
+                          <p style={{ fontSize: 12, fontWeight: 600, color: "#334155", margin: 0 }}>{pendingConsult} yêu cầu chưa xử lý</p>
+                          <p style={{ fontSize: 11, color: "#94A3B8", margin: "2px 0 0" }}>Cần tư vấn sớm</p>
                         </div>
                       </div>
                     )}
                     {processingOrders > 0 && (
-                      <div className="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 cursor-pointer" onClick={() => { setActiveTab("orders"); setNotifOpen(false); }}>
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#EFF6FF" }}>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" stroke="#38BDF8" strokeWidth="2"/></svg>
-                        </div>
+                      <div style={{ display: "flex", gap: 11, padding: "12px 16px", cursor: "pointer", borderTop: pendingConsult > 0 ? "1px solid #F8FAFC" : "none" }} onClick={() => { setActiveTab("orders"); setNotifOpen(false); }}>
+                        <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#EFF6FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>📋</div>
                         <div>
-                          <p className="text-xs font-semibold text-slate-700">{processingOrders} đơn hàng đang xử lý</p>
-                          <p className="text-xs text-slate-400 mt-0.5">Kiểm tra tiến độ</p>
+                          <p style={{ fontSize: 12, fontWeight: 600, color: "#334155", margin: 0 }}>{processingOrders} đơn đang xử lý</p>
+                          <p style={{ fontSize: 11, color: "#94A3B8", margin: "2px 0 0" }}>Kiểm tra tiến độ</p>
                         </div>
                       </div>
                     )}
                   </div>
                 )}
               </div>
-
               {/* Avatar */}
-              <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white cursor-pointer" style={{ background: "linear-gradient(135deg,#38BDF8,#0EA5E9)" }}>Đ</div>
+              <div style={{ width: 34, height: 34, borderRadius: "50%", background: "linear-gradient(135deg,#38BDF8,#0EA5E9)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, color: "white", cursor: "pointer" }}>Đ</div>
             </div>
           </header>
 
           {/* ── MOBILE TAB BAR ── */}
-          <div className="lg:hidden sticky top-[57px] z-10" style={{ background: "rgba(240,244,248,0.95)", backdropFilter: "blur(8px)", borderBottom: "1px solid #E2E8F0" }}>
-            <div ref={tabBarRef} className="flex overflow-x-auto px-2 py-2 gap-1" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-              {TABS.map(tab => (
-                <button key={tab.id} data-tab={tab.id} onClick={() => setActiveTab(tab.id)}
-                  className={`flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium transition-all duration-200 ${activeTab === tab.id ? "tab-active" : ""}`}
-                  style={{
-                    background: activeTab === tab.id ? "white" : "transparent",
-                    color: activeTab === tab.id ? "#FF6B2B" : "#64748B",
-                    boxShadow: activeTab === tab.id ? "0 1px 4px rgba(0,0,0,.08)" : "none",
-                    fontWeight: activeTab === tab.id ? 600 : 400,
-                  }}>
-                  <span style={{ color: activeTab === tab.id ? "#FF6B2B" : "#94A3B8" }}>{tab.icon}</span>
-                  {tab.shortLabel}
-                  {tab.id === "consult" && pendingConsult > 0 && <span className="w-4 h-4 rounded-full text-white text-xs flex items-center justify-center" style={{ background: "#FF6B2B", fontSize: 9 }}>{pendingConsult}</span>}
-                  {tab.id === "orders" && processingOrders > 0 && <span className="w-4 h-4 rounded-full text-white text-xs flex items-center justify-center" style={{ background: "#FF6B2B", fontSize: 9 }}>{processingOrders}</span>}
-                </button>
-              ))}
+          <div style={{ position: "sticky", top: 57, zIndex: 10, background: "rgba(240,244,248,.96)", backdropFilter: "blur(8px)", borderBottom: "1px solid #E2E8F0" }}>
+            <div ref={tabBarRef} className="mp-noscroll" style={{ display: "flex", overflowX: "auto", padding: "6px 8px", gap: 3 }}>
+              {TABS.map(tab => {
+                const isActive = activeTab === tab.id;
+                const badge = tab.id === "consult" ? pendingConsult : tab.id === "orders" ? processingOrders : 0;
+                return (
+                  <button key={tab.id} data-tab={tab.id} onClick={() => setActiveTab(tab.id)}
+                    className={`mp-btn mp-tab-pill ${isActive ? "active" : ""}`}
+                    style={{ flexShrink: 0, padding: "7px 13px", borderRadius: 9, background: isActive ? "white" : "transparent", color: isActive ? "#FF6B2B" : "#64748B", fontSize: 12, fontWeight: isActive ? 700 : 400, boxShadow: isActive ? "0 1px 4px rgba(0,0,0,.08)" : "none", gap: 5 }}>
+                    <span>{tab.icon}</span>
+                    <span>{tab.shortLabel}</span>
+                    {badge > 0 && <span style={{ width: 15, height: 15, borderRadius: "50%", background: "#FF6B2B", color: "white", fontSize: 8, fontWeight: 700, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{badge}</span>}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {/* ── PAGE CONTENT ── */}
-          <main className="flex-1 p-4 lg:p-6 xl:p-8">
-
-            {/* PAGE TITLE */}
-            <div className="mb-5 lg:mb-7" style={{ animation: mounted ? "slideUp .4s ease both" : "none", opacity: 0 }}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-xl lg:text-2xl font-bold text-slate-800">
-                    {TABS.find(t => t.id === activeTab)?.label}
-                  </h1>
-                  <p className="text-sm text-slate-400 mt-0.5">Tháng 3, 2026 • DAN Platform</p>
-                </div>
-                {(activeTab === "products" || activeTab === "customers") && (
-                  <button className="btn-primary flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" strokeWidth="2.5" strokeLinecap="round"/></svg>
-                    <span className="hidden sm:inline">Thêm mới</span>
-                  </button>
-                )}
+          <main style={{ flex: 1, padding: "16px 14px 80px" }}>
+            {/* Page header */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18, opacity: mounted ? 1 : 0, transition: "opacity .3s" }}>
+              <div>
+                <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: "#1E293B" }}>{tabLabel}</h1>
+                <p style={{ margin: "3px 0 0", fontSize: 12, color: "#94A3B8" }}>Tháng 3, 2026 · DAN Platform</p>
               </div>
+              {FAB_ACTIONS[activeTab] && (
+                <button className="mp-btn mp-btn-primary" style={{ padding: "10px 16px", fontSize: 13 }} onClick={FAB_ACTIONS[activeTab]}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" strokeWidth="2.5" strokeLinecap="round" /></svg>
+                  Thêm mới
+                </button>
+              )}
             </div>
 
-            {/* ════════════════════════════════════════════════
-                TAB: THỐNG KÊ
-            ════════════════════════════════════════════════ */}
-            {activeTab === "stats" && (
-              <div className="space-y-5">
-                {/* KPI cards */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
-                  {[
-                    { label: "Tổng lượt truy cập", value: totalVisitors.toLocaleString(), sub: `+${growth}% tháng này`, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="2"/><circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="2"/></svg>, color: "#38BDF8", bg: "#EFF6FF", trend: "up", chartData: VISITOR_DATA.slice(-8) },
-                    { label: "Doanh thu tháng", value: totalRevenue, sub: "6 đơn hoàn thành", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><line x1="12" y1="1" x2="12" y2="23" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>, color: "#FF6B2B", bg: "#FFF3EE", trend: "up", chartData: VISITOR_DATA.slice(-8).map(d => ({...d, v: Math.round(d.v * 0.8)})) },
-                    { label: "Yêu cầu tư vấn", value: CONSULTATIONS.length, sub: `${pendingConsult} chờ xử lý`, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" strokeWidth="2"/></svg>, color: "#A78BFA", bg: "#F5F3FF", trend: "up", chartData: VISITOR_DATA.slice(-8).map(d => ({...d, v: Math.round(d.v * 0.3)})) },
-                    { label: "Đơn hàng tháng", value: ORDERS.length, sub: `${processingOrders} đang xử lý`, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke="currentColor" strokeWidth="2"/></svg>, color: "#10B981", bg: "#ECFDF5", trend: "up", chartData: VISITOR_DATA.slice(-8).map(d => ({...d, v: Math.round(d.v * 0.5)})) },
-                  ].map((kpi, i) => (
-                    <div key={i} className="card-enter bg-white rounded-2xl p-4 card-shadow" style={{ animationDelay: `${i * 0.07}s` }}>
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: kpi.bg, color: kpi.color }}>{kpi.icon}</div>
-                        <div className="flex items-center gap-1 text-xs font-medium" style={{ color: "#10B981" }}>
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="#10B981" strokeWidth="2.5" strokeLinecap="round"/></svg>
-                          {kpi.trend === "up" ? "Tăng" : "Giảm"}
-                        </div>
-                      </div>
-                      <div className="stat-num font-bold text-slate-800 text-xl lg:text-2xl leading-tight" style={{ animationDelay: `${i * 0.07 + 0.15}s` }}>{kpi.value}</div>
-                      <div className="text-xs text-slate-400 mt-0.5 mb-3">{kpi.label}</div>
-                      <MiniChart data={kpi.chartData} color={kpi.color} height={36} />
-                      <div className="text-xs mt-1.5 font-medium" style={{ color: kpi.color }}>{kpi.sub}</div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Visitor chart */}
-                <div className="bg-white rounded-2xl p-5 card-shadow card-enter" style={{ animationDelay: "0.28s" }}>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full live-dot" style={{ background: "#10B981" }} />
-                        <h2 className="font-bold text-slate-800">Lượt truy cập tháng 3/2026</h2>
-                      </div>
-                      <p className="text-xs text-slate-400 mt-0.5">Theo dõi khách truy cập hàng ngày</p>
-                    </div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {[
-                        { label: "Hôm nay", value: todayVisitors.toLocaleString(), color: "#FF6B2B" },
-                        { label: "TB/ngày", value: avgDaily.toLocaleString(), color: "#38BDF8" },
-                        { label: "Tổng tháng", value: (totalVisitors/1000).toFixed(1)+"k", color: "#A78BFA" },
-                      ].map(s => (
-                        <div key={s.label} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl" style={{ background: "#F8FAFC" }}>
-                          <div className="w-2 h-2 rounded-full" style={{ background: s.color }} />
-                          <span className="text-xs text-slate-500">{s.label}:</span>
-                          <span className="text-xs font-bold" style={{ color: s.color }}>{s.value}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <VisitorChart data={VISITOR_DATA} />
-
-                  {/* Breakdown row */}
-                  <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-slate-100">
-                    {[
-                      { label: "Khách mới", pct: 68, color: "#FF6B2B" },
-                      { label: "Quay lại", pct: 32, color: "#38BDF8" },
-                      { label: "Từ Mobile", pct: 74, color: "#A78BFA" },
-                    ].map(b => (
-                      <div key={b.label}>
-                        <div className="flex justify-between text-xs mb-1.5">
-                          <span className="text-slate-500">{b.label}</span>
-                          <span className="font-semibold" style={{ color: b.color }}>{b.pct}%</span>
-                        </div>
-                        <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
-                          <div className="h-full rounded-full" style={{ width: `${b.pct}%`, background: b.color, transition: "width 1s ease" }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Recent + Top products row */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {/* Recent orders */}
-                  <div className="bg-white rounded-2xl p-5 card-shadow card-enter" style={{ animationDelay: "0.35s" }}>
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-bold text-slate-800 text-sm">Đơn hàng gần đây</h3>
-                      <button className="text-xs font-medium" style={{ color: "#38BDF8" }} onClick={() => setActiveTab("orders")}>Xem tất cả →</button>
-                    </div>
-                    <div className="space-y-3">
-                      {ORDERS.slice(0, 4).map(o => (
-                        <div key={o.id} className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-xs font-bold text-white" style={{ background: "linear-gradient(135deg,#FF6B2B,#38BDF8)" }}>{o.customer.charAt(0)}</div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-xs font-semibold text-slate-700 truncate">{o.customer}</div>
-                            <div className="text-xs text-slate-400 truncate">{o.service}</div>
-                          </div>
-                          <div className="text-right flex-shrink-0">
-                            <div className="text-xs font-bold text-slate-700">{o.amount}</div>
-                            <Badge status={o.status} />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Top products */}
-                  <div className="bg-white rounded-2xl p-5 card-shadow card-enter" style={{ animationDelay: "0.42s" }}>
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-bold text-slate-800 text-sm">Sản phẩm bán chạy</h3>
-                      <button className="text-xs font-medium" style={{ color: "#38BDF8" }} onClick={() => setActiveTab("products")}>Xem tất cả →</button>
-                    </div>
-                    <div className="space-y-3">
-                      {[...PRODUCTS].sort((a,b) => b.sold - a.sold).slice(0,4).map((p, i) => (
-                        <div key={p.id} className="flex items-center gap-3">
-                          <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0"
-                            style={{ background: i === 0 ? "#FFF3EE" : i === 1 ? "#EFF6FF" : "#F8FAFC", color: i === 0 ? "#FF6B2B" : i === 1 ? "#38BDF8" : "#94A3B8" }}>
-                            {i + 1}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-xs font-semibold text-slate-700 truncate">{p.name}</div>
-                            <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden mt-1">
-                              <div className="h-full rounded-full" style={{ width: `${(p.sold / PRODUCTS[0].sold) * 100}%`, background: i === 0 ? "#FF6B2B" : i === 1 ? "#38BDF8" : "#CBD5E1" }} />
-                            </div>
-                          </div>
-                          <div className="text-xs font-bold text-slate-500 flex-shrink-0">{p.sold} bán</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* ════════════════════════════════════════════════
-                TAB: SẢN PHẨM
-            ════════════════════════════════════════════════ */}
-            {activeTab === "products" && (
-              <div className="space-y-4">
-                {/* Summary pills */}
-                <div className="flex gap-2 flex-wrap">
-                  {[
-                    { label: "Tất cả", count: PRODUCTS.length, color: "#FF6B2B" },
-                    { label: "Hoạt động", count: PRODUCTS.filter(p => p.status === "active").length, color: "#10B981" },
-                    { label: "Tạm ẩn", count: PRODUCTS.filter(p => p.status === "inactive").length, color: "#94A3B8" },
-                  ].map(s => (
-                    <div key={s.label} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white card-shadow text-xs">
-                      <span className="font-semibold" style={{ color: s.color }}>{s.count}</span>
-                      <span className="text-slate-500">{s.label}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Desktop table */}
-                <div className="hidden md:block bg-white rounded-2xl card-shadow overflow-hidden">
-                  <div className="table-wrap">
-                    <table>
-                      <thead>
-                        <tr><th>Mã SP</th><th>Tên sản phẩm</th><th>Danh mục</th><th>Giá</th><th>Đã bán</th><th>Trạng thái</th><th>Thao tác</th></tr>
-                      </thead>
-                      <tbody>
-                        {PRODUCTS.map((p, i) => (
-                          <tr key={p.id} className="row-hover" style={{ animationDelay: `${i * 0.05}s` }}>
-                            <td><span className="font-mono text-xs text-slate-400">{p.id}</span></td>
-                            <td><span className="font-semibold text-slate-700">{p.name}</span></td>
-                            <td><span className="chip" style={{ background: "#EFF6FF", color: "#38BDF8" }}>{p.category}</span></td>
-                            <td><span className="font-bold" style={{ color: "#FF6B2B" }}>{p.price}</span></td>
-                            <td>
-                              <div className="flex items-center gap-2">
-                                <span className="font-semibold text-slate-600">{p.sold}</span>
-                                <div className="w-16 h-1.5 rounded-full bg-slate-100 overflow-hidden">
-                                  <div className="h-full rounded-full" style={{ width: `${(p.sold/48)*100}%`, background: "#FF6B2B" }} />
-                                </div>
-                              </div>
-                            </td>
-                            <td><Badge status={p.status} /></td>
-                            <td>
-                              <div className="flex items-center gap-1.5">
-                                <button className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-sky-50 text-slate-400 hover:text-sky-500 transition-colors">
-                                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
-                                </button>
-                                <button className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-red-50 text-slate-400 hover:text-red-400 transition-colors">
-                                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="2"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" strokeWidth="2"/></svg>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* Mobile cards */}
-                <div className="md:hidden space-y-3">
-                  {PRODUCTS.map(p => (
-                    <div key={p.id} className="mobile-card">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <div className="font-semibold text-slate-700 text-sm">{p.name}</div>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="font-mono text-xs text-slate-400">{p.id}</span>
-                            <span className="chip" style={{ background: "#EFF6FF", color: "#38BDF8" }}>{p.category}</span>
-                          </div>
-                        </div>
-                        <Badge status={p.status} />
-                      </div>
-                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
-                        <div>
-                          <div className="text-xs text-slate-400">Giá</div>
-                          <div className="font-bold text-sm" style={{ color: "#FF6B2B" }}>{p.price}</div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-slate-400 text-right">Đã bán</div>
-                          <div className="font-bold text-sm text-slate-600 text-right">{p.sold}</div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button className="px-3 py-1.5 rounded-lg text-xs font-medium btn-sky text-white">Sửa</button>
-                          <button className="px-3 py-1.5 rounded-lg text-xs font-medium bg-red-50 text-red-400">Xoá</button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ════════════════════════════════════════════════
-                TAB: TƯ VẤN
-            ════════════════════════════════════════════════ */}
-            {activeTab === "consult" && (
-              <div className="space-y-4">
-                <div className="flex gap-2 flex-wrap">
-                  {[
-                    { label: "Tất cả", count: CONSULTATIONS.length },
-                    { label: "Chờ xử lý", count: CONSULTATIONS.filter(c=>c.status==="pending").length, alert: true },
-                    { label: "Đã xác nhận", count: CONSULTATIONS.filter(c=>c.status==="confirmed").length },
-                    { label: "Hoàn thành", count: CONSULTATIONS.filter(c=>c.status==="done").length },
-                  ].map(s => (
-                    <div key={s.label} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs card-shadow ${s.alert ? "bg-orange-50" : "bg-white"}`}>
-                      <span className="font-semibold" style={{ color: s.alert ? "#FF6B2B" : "#64748B" }}>{s.count}</span>
-                      <span className="text-slate-500">{s.label}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="hidden md:block bg-white rounded-2xl card-shadow overflow-hidden">
-                  <div className="table-wrap">
-                    <table>
-                      <thead><tr><th>Mã</th><th>Khách hàng</th><th>SĐT</th><th>Dịch vụ quan tâm</th><th>Thời gian</th><th>Ghi chú</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
-                      <tbody>
-                        {CONSULTATIONS.map((c, i) => (
-                          <tr key={c.id} className="row-hover">
-                            <td><span className="font-mono text-xs text-slate-400">{c.id}</span></td>
-                            <td><span className="font-semibold text-slate-700">{c.name}</span></td>
-                            <td><span className="text-slate-500 text-xs">{c.phone}</span></td>
-                            <td><span className="chip" style={{ background: "#FFF3EE", color: "#FF6B2B" }}>{c.service}</span></td>
-                            <td><span className="text-xs text-slate-400">{c.date}</span></td>
-                            <td><span className="text-xs text-slate-500 max-w-[140px] block truncate">{c.note || "—"}</span></td>
-                            <td><Badge status={c.status} /></td>
-                            <td>
-                              <div className="flex gap-1.5">
-                                {c.status === "pending" && <button className="btn-primary px-3 py-1.5 rounded-lg text-xs text-white font-medium">Xác nhận</button>}
-                                <button className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-red-50 text-slate-400 hover:text-red-400 transition-colors">
-                                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="2"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" strokeWidth="2"/></svg>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* Mobile cards */}
-                <div className="md:hidden space-y-3">
-                  {CONSULTATIONS.map(c => (
-                    <div key={c.id} className="mobile-card">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="font-semibold text-slate-700 text-sm">{c.name}</div>
-                          <div className="text-xs text-slate-400 mt-0.5">{c.phone}</div>
-                        </div>
-                        <Badge status={c.status} />
-                      </div>
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className="chip" style={{ background: "#FFF3EE", color: "#FF6B2B" }}>{c.service}</span>
-                        <span className="text-xs text-slate-400">{c.date}</span>
-                      </div>
-                      {c.note && <p className="text-xs text-slate-500 mt-2 line-clamp-2">{c.note}</p>}
-                      {c.status === "pending" && (
-                        <div className="flex gap-2 mt-3 pt-3 border-t border-slate-100">
-                          <button className="btn-primary flex-1 py-2 rounded-xl text-xs text-white font-semibold">✓ Xác nhận</button>
-                          <button className="flex-1 py-2 rounded-xl text-xs font-semibold bg-red-50 text-red-400">✗ Huỷ</button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ════════════════════════════════════════════════
-                TAB: ĐƠN HÀNG
-            ════════════════════════════════════════════════ */}
-            {activeTab === "orders" && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { label: "Đang xử lý", count: processingOrders, color: "#FF6B2B", bg: "#FFF3EE" },
-                    { label: "Hoàn thành", count: ORDERS.filter(o=>o.status==="done").length, color: "#10B981", bg: "#ECFDF5" },
-                    { label: "Đã huỷ", count: ORDERS.filter(o=>o.status==="cancelled").length, color: "#EF4444", bg: "#FEF2F2" },
-                  ].map(s => (
-                    <div key={s.label} className="bg-white rounded-2xl p-3 lg:p-4 card-shadow text-center">
-                      <div className="text-2xl font-bold" style={{ color: s.color }}>{s.count}</div>
-                      <div className="text-xs text-slate-500 mt-0.5">{s.label}</div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="hidden md:block bg-white rounded-2xl card-shadow overflow-hidden">
-                  <div className="table-wrap">
-                    <table>
-                      <thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Dịch vụ</th><th>Thanh toán</th><th>Tổng tiền</th><th>Ngày đặt</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
-                      <tbody>
-                        {ORDERS.map(o => (
-                          <tr key={o.id} className="row-hover">
-                            <td><span className="font-mono text-xs text-slate-400">{o.id}</span></td>
-                            <td><span className="font-semibold text-slate-700">{o.customer}</span></td>
-                            <td><span className="text-xs text-slate-500 max-w-[160px] block truncate">{o.service}</span></td>
-                            <td><span className="chip" style={{ background: "#F0FDF4", color: "#16A34A" }}>{o.payment}</span></td>
-                            <td><span className="font-bold" style={{ color: "#FF6B2B" }}>{o.amount}</span></td>
-                            <td><span className="text-xs text-slate-400">{o.date}</span></td>
-                            <td><Badge status={o.status} /></td>
-                            <td>
-                              <button className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-sky-50 text-slate-400 hover:text-sky-500">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/><line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/><line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* Mobile */}
-                <div className="md:hidden space-y-3">
-                  {ORDERS.map(o => (
-                    <div key={o.id} className="mobile-card">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <div className="font-semibold text-slate-700 text-sm">{o.customer}</div>
-                          <div className="font-mono text-xs text-slate-400 mt-0.5">{o.id}</div>
-                        </div>
-                        <Badge status={o.status} />
-                      </div>
-                      <div className="text-xs text-slate-500 line-clamp-1">{o.service}</div>
-                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
-                        <div className="flex items-center gap-2">
-                          <span className="chip" style={{ background: "#F0FDF4", color: "#16A34A" }}>{o.payment}</span>
-                          <span className="text-xs text-slate-400">{o.date}</span>
-                        </div>
-                        <span className="font-bold text-sm" style={{ color: "#FF6B2B" }}>{o.amount}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ════════════════════════════════════════════════
-                TAB: KHÁCH HÀNG
-            ════════════════════════════════════════════════ */}
-            {activeTab === "customers" && (
-              <div className="space-y-4">
-                <div className="flex gap-2 flex-wrap">
-                  {[
-                    { label: "Tổng", count: CUSTOMERS.length, color: "#64748B" },
-                    { label: "Platinum", count: CUSTOMERS.filter(c=>c.tier==="platinum").length, color: "#7C3AED" },
-                    { label: "Gold", count: CUSTOMERS.filter(c=>c.tier==="gold").length, color: "#D97706" },
-                    { label: "Mới", count: CUSTOMERS.filter(c=>c.tier==="new").length, color: "#0EA5E9" },
-                  ].map(s => (
-                    <div key={s.label} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white card-shadow text-xs">
-                      <span className="font-semibold" style={{ color: s.color }}>{s.count}</span>
-                      <span className="text-slate-500">{s.label}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="hidden md:block bg-white rounded-2xl card-shadow overflow-hidden">
-                  <div className="table-wrap">
-                    <table>
-                      <thead><tr><th>Mã KH</th><th>Tên khách hàng</th><th>Liên hệ</th><th>Đơn hàng</th><th>Tổng chi tiêu</th><th>Ngày tham gia</th><th>Hạng</th><th>Thao tác</th></tr></thead>
-                      <tbody>
-                        {CUSTOMERS.map(c => (
-                          <tr key={c.id} className="row-hover">
-                            <td><span className="font-mono text-xs text-slate-400">{c.id}</span></td>
-                            <td>
-                              <div className="flex items-center gap-2.5">
-                                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ background: "linear-gradient(135deg,#FF6B2B,#38BDF8)" }}>{c.name.charAt(0)}</div>
-                                <span className="font-semibold text-slate-700">{c.name}</span>
-                              </div>
-                            </td>
-                            <td>
-                              <div className="text-xs text-slate-500">{c.phone}</div>
-                              <div className="text-xs text-slate-400">{c.email}</div>
-                            </td>
-                            <td><span className="font-bold text-slate-600">{c.orders}</span></td>
-                            <td><span className="font-bold" style={{ color: "#FF6B2B" }}>{c.total}</span></td>
-                            <td><span className="text-xs text-slate-400">{c.joined}</span></td>
-                            <td>
-                              <span className={`chip ${tierConfig[c.tier].bg} ${tierConfig[c.tier].text}`}>
-                                {tierConfig[c.tier].icon} {tierConfig[c.tier].label}
-                              </span>
-                            </td>
-                            <td>
-                              <button className="btn-sky px-3 py-1.5 rounded-lg text-xs text-white font-medium">Chi tiết</button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* Mobile */}
-                <div className="md:hidden space-y-3">
-                  {CUSTOMERS.map(c => (
-                    <div key={c.id} className="mobile-card">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0" style={{ background: "linear-gradient(135deg,#FF6B2B,#38BDF8)" }}>{c.name.charAt(0)}</div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-slate-700 text-sm truncate">{c.name}</div>
-                          <div className="text-xs text-slate-400">{c.phone}</div>
-                        </div>
-                        <span className={`chip ${tierConfig[c.tier].bg} ${tierConfig[c.tier].text}`}>
-                          {tierConfig[c.tier].icon} {tierConfig[c.tier].label}
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2 pt-3 border-t border-slate-100">
-                        <div className="text-center">
-                          <div className="font-bold text-slate-700">{c.orders}</div>
-                          <div className="text-xs text-slate-400">Đơn hàng</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="font-bold text-xs" style={{ color: "#FF6B2B" }}>{c.total}</div>
-                          <div className="text-xs text-slate-400">Chi tiêu</div>
-                        </div>
-                        <div className="text-center">
-                          <button className="btn-sky px-3 py-1.5 rounded-lg text-xs text-white font-medium w-full">Chi tiết</button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
+            {/* Tab content */}
+            {activeTab === "stats" && <StatsTab consultations={consultations} setActiveTab={setActiveTab} />}
+            {activeTab === "categories" && <CategoriesTab categories={categories || []} products={products} addCategory={addCategory} removeCategory={removeCategory} openModal={openModal} />}
+            {activeTab === "producttypes" && <ProductTypesTab productTypes={productTypes || []} products={products} addProductType={addProductType} removeProductType={removeProductType} openModal={openModal} />}
+            {activeTab === "products" && <ProductsTab products={products} setProducts={setProducts} categories={categories || []} productTypes={productTypes || []} openModal={openModal} />}
+            {activeTab === "consult" && <ConsultTab consultations={consultations} setConsultations={setConsultations} />}
+            {activeTab === "orders" && <OrdersTab />}
+            {activeTab === "customers" && <CustomersTab />}
           </main>
         </div>
+
+        {/* ── FLOATING ACTION BUTTON (mobile) ── */}
+        {FAB_ACTIONS[activeTab] && (
+          <button className="mp-btn mp-btn-primary" onClick={FAB_ACTIONS[activeTab]}
+            style={{ position: "fixed", bottom: 20, right: 20, zIndex: 40, width: 54, height: 54, borderRadius: "50%", fontSize: 24, boxShadow: "0 6px 24px rgba(255,107,43,.4)", padding: 0 }}>
+            +
+          </button>
+        )}
       </div>
+
+      <style>{`
+        @media(min-width:1024px) { .lg\\:flex { display: flex !important; } .lg\\:ml-232 { margin-left: 232px; } }
+        .mp-btn:disabled { opacity: .5; cursor: not-allowed; transform: none !important; }
+      `}</style>
     </>
   );
-}
+};
 
 export default ManagePage;

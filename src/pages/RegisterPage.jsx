@@ -1,4 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { register } from "../services/authService"
+
+import { toast } from "react-toastify";
+import { HttpStatusCode } from "axios";
+import path from "../utils/path"
 
 const Particle = ({ style }) => <div className="absolute rounded-full pointer-events-none" style={style} />;
 
@@ -66,6 +73,8 @@ const InputField = ({
 );
 
 const RegisterPage = () => {
+    const navigate = useNavigate();
+
     const [form, setForm] = useState({ name: "", phone: "", email: "", password: "", confirm: "" });
     const [focused, setFocused] = useState(null);
     const [showPass, setShowPass] = useState(false);
@@ -108,13 +117,46 @@ const RegisterPage = () => {
         return e;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
         const e2 = validate();
         setErrors(e2);
+
         if (Object.keys(e2).length > 0) return;
+
         setIsLoading(true);
-        setTimeout(() => { setIsLoading(false); setStep(1); }, 2000);
+
+        try {
+            const payload = {
+                username: form.name,
+                phoneNumber: form.phone,
+                email: form.email,
+                password: form.password,
+                confirmPassword: form.confirm
+            };
+
+            const res = await register(payload);
+            if (res.data.data.status === HttpStatusCode.Created) {
+                toast.success("Đăng ký thành công");
+                setStep(1); // chuyển sang màn hình success
+                navigate(path.LOGIN);
+            }
+
+
+        } catch (err) {
+
+            let message = "Đăng ký thất bại";
+
+            if (err?.response?.data?.message) {
+                message = err.response.data.message;
+            }
+
+            toast.error(message);
+
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleRipple = (ev) => {

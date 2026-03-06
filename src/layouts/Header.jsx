@@ -23,11 +23,12 @@ const Header = () => {
         >
             <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16 md:h-20">
-                    {/* Logo - Luôn hiển thị rõ ràng */}
+
+                    {/* Logo */}
                     <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.location.href = '/'}>
                         <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 
-                rounded-full overflow-hidden bg-green-50 
-                flex items-center justify-center flex-shrink-0">
+                            rounded-full overflow-hidden bg-green-50 
+                            flex items-center justify-center flex-shrink-0">
                             <img className="w-full h-full object-cover" src="/logo.png" alt="Logo" onError={(e) => {
                                 e.target.style.display = 'none';
                                 e.target.parentElement.innerHTML = '<span class="text-green-600 font-bold text-xl">P</span>';
@@ -42,7 +43,7 @@ const Header = () => {
                             <p
                                 key={item.name}
                                 onClick={() => navigate(item.path)}
-                                className="text-gray-700 hover:text-green-600 font-medium transition-colors duration-200 relative group"
+                                className="text-gray-700 hover:text-green-600 font-medium transition-colors duration-200 relative group cursor-pointer"
                             >
                                 {item.name}
                                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
@@ -62,7 +63,7 @@ const Header = () => {
                     </nav>
 
                     {/* Desktop Actions */}
-                    <div className="hidden md:flex items-center gap-4">
+                    <div className="hidden md:flex items-center gap-3">
                         <button className="p-2 hover:bg-green-50 rounded-full transition-colors relative">
                             <Heart className="w-5 h-5 text-gray-600" />
                             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">3</span>
@@ -71,12 +72,35 @@ const Header = () => {
                             <ShoppingCart className="w-5 h-5 text-gray-600" />
                             <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">5</span>
                         </button>
-                        <button
-                            onClick={() => { navigate(path.LOGIN) }}
-                            className="ml-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2">
-                            <LogIn className="w-4 h-4" />
-                            <span>Đăng nhập</span>
-                        </button>
+
+                        {!user ? (
+                            <div className="flex items-center gap-2 ml-2">
+                                {/* Đăng nhập — phụ */}
+                                <button
+                                    onClick={() => navigate(path.LOGIN)}
+                                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:border-green-500 hover:text-green-600 transition-colors flex items-center gap-2 font-medium"
+                                >
+                                    <LogIn className="w-4 h-4" />
+                                    <span>Đăng nhập</span>
+                                </button>
+                                {/* Đăng ký — nổi bật */}
+                                <button
+                                    onClick={() => navigate(path.REGISTER)}
+                                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 active:scale-95 transition-all shadow-md shadow-green-200 flex items-center gap-2 font-semibold"
+                                >
+                                    <UserPlus className="w-4 h-4" />
+                                    <span>Đăng ký</span>
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={() => { /* handle logout */ }}
+                                className="ml-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2"
+                            >
+                                <LogOut className="w-4 h-4" />
+                                <span>Đăng xuất</span>
+                            </button>
+                        )}
                     </div>
 
                     {/* Mobile Menu Button */}
@@ -124,15 +148,35 @@ const Header = () => {
                                     <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">5</span>
                                 </div>
                             </button>
+
                             {!user ? (
-                                <button className="w-full mt-3 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 font-medium">
-                                    <LogIn className="w-5 h-5" />
-                                    <span>Đăng nhập</span>
-                                </button>) : (
-                                <button className="w-full mt-3 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 font-medium">
+                                <div className="flex flex-col gap-2 pt-1">
+                                    {/* Đăng ký — nổi bật, ưu tiên trên */}
+                                    <button
+                                        onClick={() => { navigate(path.REGISTER); setMobileMenuOpen(false); }}
+                                        className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 active:scale-95 transition-all shadow-md shadow-green-200 flex items-center justify-center gap-2 font-semibold text-base"
+                                    >
+                                        <UserPlus className="w-5 h-5" />
+                                        <span>Đăng ký</span>
+                                    </button>
+                                    {/* Đăng nhập — phụ, bên dưới */}
+                                    <button
+                                        onClick={() => { navigate(path.LOGIN); setMobileMenuOpen(false); }}
+                                        className="w-full px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:border-green-500 hover:text-green-600 transition-colors flex items-center justify-center gap-2 font-medium"
+                                    >
+                                        <LogIn className="w-5 h-5" />
+                                        <span>Đăng nhập</span>
+                                    </button>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={() => { /* handle logout */ setMobileMenuOpen(false); }}
+                                    className="w-full mt-1 px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center gap-2 font-medium"
+                                >
                                     <LogOut className="w-5 h-5" />
                                     <span>Đăng xuất</span>
-                                </button>)}
+                                </button>
+                            )}
                         </div>
                     </div>
                 )}
