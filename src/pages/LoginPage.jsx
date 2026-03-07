@@ -69,8 +69,7 @@ const LoginPage = () => {
       console.log("Login response:", response);
 
       // Nếu backend trả ApiResponse
-      const authData = response.data.data.user;
-
+      const authData = response.data.data;
       // Lưu vào Zustand
       setAuth(authData);
 

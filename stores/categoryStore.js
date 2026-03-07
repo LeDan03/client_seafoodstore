@@ -20,7 +20,7 @@ const useCategoriesStore = create((set, get) => ({
       const res = await getCategories();
 
       set({
-        categories: res.data,
+        categories: res.data.data,
       });
 
     } catch (err) {
@@ -38,7 +38,7 @@ const useCategoriesStore = create((set, get) => ({
       const res = await createCategory(categoryRequest);
 
       set((state) => ({
-        categories: [...state.categories, res.data],
+        categories: [...state.categories, res.data.data],
       }));
 
       toast.success("Tạo danh mục thành công");

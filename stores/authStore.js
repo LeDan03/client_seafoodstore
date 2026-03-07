@@ -8,7 +8,7 @@ const useAuthStore = create((set) => ({
   setAuth: (data) =>
     set({
       user: data.user,
-      role: data.roleName,
+      role: data.user.roleName,
       accessToken: data.accessToken,
     }),
 

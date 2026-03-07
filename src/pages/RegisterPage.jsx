@@ -43,7 +43,7 @@ const InputField = ({
                 onFocus={onFocus}
                 onBlur={onBlur}
                 placeholder={placeholder}
-                className={error ? "error-shake" : ""}
+                className={error ? "reg-error-shake" : ""}
                 style={{
                     width: "100%",
                     background: "rgba(255,255,255,0.06)",
@@ -65,7 +65,7 @@ const InputField = ({
             )}
         </div>
         {error && (
-            <p className="text-xs mt-1.5" style={{ color: "#FB923C", fontFamily: "'DM Sans', sans-serif", animation: "fadeIn 0.3s ease" }}>
+            <p className="text-xs mt-1.5" style={{ color: "#FB923C", fontFamily: "'DM Sans', sans-serif", animation: "reg-fadeIn 0.3s ease" }}>
                 ⚠ {error}
             </p>
         )}
@@ -167,13 +167,13 @@ const RegisterPage = () => {
     };
 
     const particles = [
-        { width: 7, height: 7, top: "8%", left: "6%", background: "#38BDF8", opacity: 0.45, animation: "floatA 7s ease-in-out infinite" },
-        { width: 5, height: 5, top: "15%", right: "9%", background: "#FF6B2B", opacity: 0.5, animation: "floatB 5s ease-in-out infinite 1s" },
-        { width: 9, height: 9, top: "55%", left: "4%", background: "#0EA5E9", opacity: 0.3, animation: "floatA 9s ease-in-out infinite 2s" },
-        { width: 6, height: 6, bottom: "25%", right: "7%", background: "#38BDF8", opacity: 0.4, animation: "floatB 6s ease-in-out infinite 0.5s" },
-        { width: 4, height: 4, top: "35%", right: "3%", background: "#ffffff", opacity: 0.35, animation: "floatA 8s ease-in-out infinite 3s" },
-        { width: 11, height: 11, bottom: "15%", left: "8%", background: "#FF6B2B", opacity: 0.2, animation: "floatB 11s ease-in-out infinite 1.5s" },
-        { width: 5, height: 5, top: "75%", right: "15%", background: "#ffffff", opacity: 0.25, animation: "floatA 6s ease-in-out infinite 4s" },
+        { width: 7, height: 7, top: "8%", left: "6%", background: "#38BDF8", opacity: 0.45, animation: "reg-floatA 7s ease-in-out infinite" },
+        { width: 5, height: 5, top: "15%", right: "9%", background: "#FF6B2B", opacity: 0.5, animation: "reg-floatB 5s ease-in-out infinite 1s" },
+        { width: 9, height: 9, top: "55%", left: "4%", background: "#0EA5E9", opacity: 0.3, animation: "reg-floatA 9s ease-in-out infinite 2s" },
+        { width: 6, height: 6, bottom: "25%", right: "7%", background: "#38BDF8", opacity: 0.4, animation: "reg-floatB 6s ease-in-out infinite 0.5s" },
+        { width: 4, height: 4, top: "35%", right: "3%", background: "#ffffff", opacity: 0.35, animation: "reg-floatA 8s ease-in-out infinite 3s" },
+        { width: 11, height: 11, bottom: "15%", left: "8%", background: "#FF6B2B", opacity: 0.2, animation: "reg-floatB 11s ease-in-out infinite 1.5s" },
+        { width: 5, height: 5, top: "75%", right: "15%", background: "#ffffff", opacity: 0.25, animation: "reg-floatA 6s ease-in-out infinite 4s" },
     ];
 
     const icons = {
@@ -191,41 +191,39 @@ const RegisterPage = () => {
             <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        @keyframes floatA { 0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-18px) rotate(180deg)} }
-        @keyframes floatB { 0%,100%{transform:translateY(0) translateX(0)}33%{transform:translateY(-12px) translateX(8px)}66%{transform:translateY(6px) translateX(-6px)} }
-        @keyframes slideUp { from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)} }
-        @keyframes fadeIn { from{opacity:0}to{opacity:1} }
-        @keyframes scaleIn { from{opacity:0;transform:scale(0.93)}to{opacity:1;transform:scale(1)} }
-        @keyframes shimmer { 0%{background-position:-200% center}100%{background-position:200% center} }
-        @keyframes ripple { from{transform:scale(0);opacity:.6}to{transform:scale(4);opacity:0} }
-        @keyframes wave { 0%,100%{transform:scaleY(1)}50%{transform:scaleY(0.45)} }
-        @keyframes shake { 0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)} }
-        @keyframes pulseRing { 0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(1.08);opacity:.15} }
-        @keyframes slideRight { from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)} }
-        @keyframes successPop { 0%{opacity:0;transform:scale(0.7)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)} }
-        @keyframes successFade { from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)} }
-        .font-sora{font-family:'Sora',sans-serif}
-        .shimmer-text{background:linear-gradient(90deg,#fff 0%,#38BDF8 40%,#FF6B2B 60%,#fff 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s linear infinite}
-        .glass-card{background:rgba(255,255,255,0.065);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,0.13)}
-        .btn-register{background:linear-gradient(135deg,#FF6B2B 0%,#F97316 50%,#FB923C 100%);background-size:200% auto;transition:all .4s ease;box-shadow:0 8px 32px rgba(255,107,43,.4),0 2px 8px rgba(0,0,0,.2)}
-        .btn-register:hover:not(:disabled){background-position:right center;box-shadow:0 12px 40px rgba(255,107,43,.55);transform:translateY(-2px)}
-        .btn-register:disabled{opacity:.7;cursor:not-allowed}
-        .social-btn{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);transition:all .3s ease}
-        .social-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);transform:translateY(-2px)}
-        .divider-line::before,.divider-line::after{content:'';flex:1;height:1px}
-        .divider-line::before{background:linear-gradient(to right,transparent,rgba(255,255,255,.18))}
-        .divider-line::after{background:linear-gradient(to left,transparent,rgba(255,255,255,.18))}
-        .error-shake{animation:shake .4s ease}
-        .feature-img-mask{mask-image:linear-gradient(to bottom,rgba(0,0,0,1) 40%,rgba(0,0,0,0) 100%);-webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,1) 40%,rgba(0,0,0,0) 100%)}
-        .wave-bar{animation:wave 1.2s ease-in-out infinite}
-        ::placeholder{color:rgba(255,255,255,0.28)!important}
-        input:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px rgba(10,22,40,0.9) inset!important;-webkit-text-fill-color:white!important}
-        .step-dot{transition:all .35s ease}
-        .progress-bar{transition:width .5s cubic-bezier(.4,0,.2,1)}
+        @keyframes reg-floatA { 0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-18px) rotate(180deg)} }
+        @keyframes reg-floatB { 0%,100%{transform:translateY(0) translateX(0)}33%{transform:translateY(-12px) translateX(8px)}66%{transform:translateY(6px) translateX(-6px)} }
+        @keyframes reg-slideUp { from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)} }
+        @keyframes reg-fadeIn { from{opacity:0}to{opacity:1} }
+        @keyframes reg-scaleIn { from{opacity:0;transform:scale(0.93)}to{opacity:1;transform:scale(1)} }
+        @keyframes reg-shimmer { 0%{background-position:-200% center}100%{background-position:200% center} }
+        @keyframes reg-ripple { from{transform:scale(0);opacity:.6}to{transform:scale(4);opacity:0} }
+        @keyframes reg-wave { 0%,100%{transform:scaleY(1)}50%{transform:scaleY(0.45)} }
+        @keyframes reg-shake { 0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)} }
+        @keyframes reg-pulseRing { 0%,100%{transform:scale(1);opacity:.4}50%{transform:scale(1.08);opacity:.15} }
+        @keyframes reg-slideRight { from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)} }
+        @keyframes reg-successPop { 0%{opacity:0;transform:scale(0.7)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)} }
+        @keyframes reg-successFade { from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)} }
+        .reg-font-sora{font-family:'Sora',sans-serif}
+        .reg-shimmer-text{background:linear-gradient(90deg,#fff 0%,#38BDF8 40%,#FF6B2B 60%,#fff 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:reg-shimmer 4s linear infinite}
+        .reg-glass-card{background:rgba(255,255,255,0.065);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,0.13)}
+        .reg-btn-register{background:linear-gradient(135deg,#FF6B2B 0%,#F97316 50%,#FB923C 100%);background-size:200% auto;transition:all .4s ease;box-shadow:0 8px 32px rgba(255,107,43,.4),0 2px 8px rgba(0,0,0,.2)}
+        .reg-btn-register:hover:not(:disabled){background-position:right center;box-shadow:0 12px 40px rgba(255,107,43,.55);transform:translateY(-2px)}
+        .reg-btn-register:disabled{opacity:.7;cursor:not-allowed}
+        .reg-divider-line::before,.reg-divider-line::after{content:'';flex:1;height:1px}
+        .reg-divider-line::before{background:linear-gradient(to right,transparent,rgba(255,255,255,.18))}
+        .reg-divider-line::after{background:linear-gradient(to left,transparent,rgba(255,255,255,.18))}
+        .reg-error-shake{animation:reg-shake .4s ease}
+        .reg-feature-img-mask{mask-image:linear-gradient(to bottom,rgba(0,0,0,1) 40%,rgba(0,0,0,0) 100%);-webkit-mask-image:linear-gradient(to bottom,rgba(0,0,0,1) 40%,rgba(0,0,0,0) 100%)}
+        .reg-wave-bar{animation:reg-wave 1.2s ease-in-out infinite}
+        .reg-step-dot{transition:all .35s ease}
+        .reg-progress-bar{transition:width .5s cubic-bezier(.4,0,.2,1)}
+        .reg-wrap ::placeholder{color:rgba(255,255,255,0.28)!important}
+        .reg-wrap input:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px rgba(10,22,40,0.9) inset!important;-webkit-text-fill-color:white!important}
       `}</style>
 
             <div
-                className="font-sora min-h-screen w-full relative overflow-hidden flex flex-col"
+                className="reg-wrap reg-font-sora min-h-screen w-full relative overflow-hidden flex flex-col"
                 style={{ background: "linear-gradient(135deg, #0A1628 0%, #0D1F3C 40%, #0A2847 70%, #071A35 100%)" }}
             >
                 {/* Ambient blobs */}
@@ -242,12 +240,12 @@ const RegisterPage = () => {
                 {/* ═══ MOBILE ═══ */}
                 <div className="lg:hidden flex flex-col min-h-screen">
                     {/* Feature image strip */}
-                    <div className="relative w-full overflow-hidden" style={{ height: 200, animation: mounted ? "fadeIn .8s ease forwards" : "none", opacity: 0 }}>
-                        <img src="feature-bg.png" alt="" className="w-full h-full object-cover feature-img-mask" style={{ filter: "brightness(0.7) saturate(1.2)" }} />
+                    <div className="relative w-full overflow-hidden" style={{ height: 200, animation: mounted ? "reg-fadeIn .8s ease forwards" : "none", opacity: 0 }}>
+                        <img src="feature-bg.png" alt="" className={`w-full h-full object-cover reg-feature-img-mask`} style={{ filter: "brightness(0.7) saturate(1.2)" }} />
                         <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(10,22,40,0.15) 0%, rgba(10,22,40,0.9) 100%)" }} />
 
                         {/* Logo */}
-                        <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between" style={{ animation: mounted ? "slideRight .7s .3s both" : "none", opacity: 0 }}>
+                        <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between" style={{ animation: mounted ? "reg-slideRight .7s .3s both" : "none", opacity: 0 }}>
                             <div className="flex items-center gap-3">
                                 <div className="relative w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #FF6B2B, #F97316)", boxShadow: "0 6px 20px rgba(255,107,43,0.4)" }}>
                                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -263,7 +261,7 @@ const RegisterPage = () => {
                             {/* Progress indicator */}
                             <div className="flex items-center gap-1.5">
                                 {[0, 1].map(i => (
-                                    <div key={i} className="step-dot rounded-full" style={{ width: i === 0 ? 20 : 6, height: 6, background: i === 0 ? "#FF6B2B" : "rgba(255,255,255,0.25)" }} />
+                                    <div key={i} className="reg-step-dot rounded-full" style={{ width: i === 0 ? 20 : 6, height: 6, background: i === 0 ? "#FF6B2B" : "rgba(255,255,255,0.25)" }} />
                                 ))}
                             </div>
                         </div>
@@ -272,7 +270,7 @@ const RegisterPage = () => {
                     {/* Form card */}
                     <div className="flex-1 px-4 pb-8 pt-2 relative z-10">
                         {step === 0 ? (
-                            <div className="glass-card rounded-3xl p-5" style={{ animation: mounted ? "scaleIn .6s .4s both" : "none", opacity: 0 }}>
+                            <div className="reg-glass-card rounded-3xl p-5" style={{ animation: mounted ? "reg-scaleIn .6s .4s both" : "none", opacity: 0 }}>
                                 {/* Header */}
                                 <div className="mb-5">
                                     <div className="flex items-center gap-2 mb-1">
@@ -308,7 +306,7 @@ const RegisterPage = () => {
                                             <input type={showPass ? "text" : "password"} value={form.password} onChange={set("password")}
                                                 onFocus={() => setFocused("pass")} onBlur={() => setFocused(null)}
                                                 placeholder="Tối thiểu 6 ký tự"
-                                                className={errors.password ? "error-shake" : ""}
+                                                className={errors.password ? "reg-error-shake" : ""}
                                                 style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: `1.5px solid ${focused === "pass" ? "#FF6B2B" : errors.password ? "#FB923C" : "rgba(255,255,255,0.12)"}`, borderRadius: "1rem", color: "white", padding: "14px 48px 14px 44px", fontFamily: "'DM Sans',sans-serif", fontSize: "14px", outline: "none", transition: "all .3s", boxShadow: focused === "pass" ? "0 0 0 3px rgba(255,107,43,0.2)" : "none" }} />
                                             <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2" style={{ color: "rgba(255,255,255,0.4)" }}>
                                                 {showPass ? icons.eyeOff : icons.eye}
@@ -336,7 +334,7 @@ const RegisterPage = () => {
                                             <input type={showConfirm ? "text" : "password"} value={form.confirm} onChange={set("confirm")}
                                                 onFocus={() => setFocused("confirm")} onBlur={() => setFocused(null)}
                                                 placeholder="Nhập lại mật khẩu"
-                                                className={errors.confirm ? "error-shake" : ""}
+                                                className={errors.confirm ? "reg-error-shake" : ""}
                                                 style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: `1.5px solid ${focused === "confirm" ? "#38BDF8" : errors.confirm ? "#FB923C" : form.confirm && form.confirm === form.password ? "#22C55E" : "rgba(255,255,255,0.12)"}`, borderRadius: "1rem", color: "white", padding: "14px 48px 14px 44px", fontFamily: "'DM Sans',sans-serif", fontSize: "14px", outline: "none", transition: "all .3s", boxShadow: focused === "confirm" ? "0 0 0 3px rgba(56,189,248,0.2)" : "none" }} />
                                             <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
                                                 {form.confirm && form.confirm === form.password && (
@@ -365,13 +363,13 @@ const RegisterPage = () => {
                                     </div>
 
                                     {/* Submit */}
-                                    <button type="submit" onClick={handleRipple} disabled={isLoading} className="btn-register relative w-full rounded-2xl py-3.5 text-white font-semibold text-sm tracking-wide overflow-hidden mt-1">
+                                    <button type="submit" onClick={handleRipple} disabled={isLoading} className="reg-btn-register relative w-full rounded-2xl py-3.5 text-white font-semibold text-sm tracking-wide overflow-hidden mt-1">
                                         {ripples.map(r => (
-                                            <span key={r.id} className="absolute rounded-full" style={{ left: r.x, top: r.y, width: 20, height: 20, marginLeft: -10, marginTop: -10, background: "rgba(255,255,255,0.3)", animation: "ripple .7s linear forwards" }} />
+                                            <span key={r.id} className="absolute rounded-full" style={{ left: r.x, top: r.y, width: 20, height: 20, marginLeft: -10, marginTop: -10, background: "rgba(255,255,255,0.3)", animation: "reg-ripple .7s linear forwards" }} />
                                         ))}
                                         {isLoading ? (
                                             <span className="flex items-center justify-center gap-2">
-                                                <span className="flex gap-1">{[0, 1, 2].map(i => <span key={i} className="wave-bar w-1 h-4 rounded-full bg-white inline-block" style={{ animationDelay: `${i * .15}s` }} />)}</span>
+                                                <span className="flex gap-1">{[0, 1, 2].map(i => <span key={i} className="reg-wave-bar w-1 h-4 rounded-full bg-white inline-block" style={{ animationDelay: `${i * .15}s` }} />)}</span>
                                                 Đang tạo tài khoản...
                                             </span>
                                         ) : (
@@ -389,13 +387,13 @@ const RegisterPage = () => {
                             </div>
                         ) : (
                             /* Success state */
-                            <div className="glass-card rounded-3xl p-8 flex flex-col items-center text-center" style={{ animation: "successPop .6s ease forwards" }}>
-                                <div style={{ animation: "successPop .5s .1s both" }}>{icons.check}</div>
-                                <h2 className="text-2xl font-bold text-white mt-4 mb-2" style={{ animation: "successFade .5s .3s both", opacity: 0 }}>Đăng ký thành công!</h2>
-                                <p className="text-sm" style={{ color: "rgba(255,255,255,0.5)", fontFamily: "'DM Sans',sans-serif", animation: "successFade .5s .45s both", opacity: 0 }}>
+                            <div className="reg-glass-card rounded-3xl p-8 flex flex-col items-center text-center" style={{ animation: "reg-successPop .6s ease forwards" }}>
+                                <div style={{ animation: "reg-successPop .5s .1s both" }}>{icons.check}</div>
+                                <h2 className="text-2xl font-bold text-white mt-4 mb-2" style={{ animation: "reg-successFade .5s .3s both", opacity: 0 }}>Đăng ký thành công!</h2>
+                                <p className="text-sm" style={{ color: "rgba(255,255,255,0.5)", fontFamily: "'DM Sans',sans-serif", animation: "reg-successFade .5s .45s both", opacity: 0 }}>
                                     Chào mừng <span className="font-semibold text-white">{form.name}</span> đến với DAN Platform 🎉
                                 </p>
-                                <button className="btn-register mt-6 w-full rounded-2xl py-3.5 text-white font-semibold text-sm" style={{ animation: "successFade .5s .6s both", opacity: 0 }}>
+                                <button className="reg-btn-register mt-6 w-full rounded-2xl py-3.5 text-white font-semibold text-sm" style={{ animation: "reg-successFade .5s .6s both", opacity: 0 }}>
                                     Đăng nhập ngay
                                 </button>
                             </div>
@@ -407,13 +405,13 @@ const RegisterPage = () => {
                 <div className="hidden lg:flex min-h-screen">
 
                     {/* Left panel — feature image */}
-                    <div className="relative w-[45%] xl:w-[50%] overflow-hidden" style={{ animation: mounted ? "fadeIn .8s ease forwards" : "none", opacity: 0 }}>
+                    <div className="relative w-[45%] xl:w-[50%] overflow-hidden" style={{ animation: mounted ? "reg-fadeIn .8s ease forwards" : "none", opacity: 0 }}>
                         <img src="feature-bg.png" alt="" className="absolute inset-0 w-full h-full object-cover" style={{ filter: "brightness(0.65) saturate(1.3)" }} />
                         <div className="absolute inset-0" style={{ background: "linear-gradient(130deg, rgba(10,22,40,0.55) 0%, rgba(10,22,40,0.15) 55%, rgba(56,189,248,0.08) 100%)" }} />
 
                         <div className="relative h-full flex flex-col justify-between p-10 xl:p-14">
                             {/* Logo */}
-                            <div style={{ animation: mounted ? "slideRight .7s .4s both" : "none", opacity: 0 }}>
+                            <div style={{ animation: mounted ? "reg-slideRight .7s .4s both" : "none", opacity: 0 }}>
                                 <div className="flex items-center gap-3">
                                     <div className="relative w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #FF6B2B, #F97316)", boxShadow: "0 8px 24px rgba(255,107,43,0.4)" }}>
                                         <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
@@ -429,14 +427,14 @@ const RegisterPage = () => {
                             </div>
 
                             {/* Center content */}
-                            <div style={{ animation: mounted ? "slideUp .8s .55s both" : "none", opacity: 0 }}>
+                            <div style={{ animation: mounted ? "reg-slideUp .8s .55s both" : "none", opacity: 0 }}>
                                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-5" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.14)" }}>
                                     <div className="w-2 h-2 rounded-full" style={{ background: "#FF6B2B", boxShadow: "0 0 8px #FF6B2B" }} />
                                     <span className="text-xs tracking-wider" style={{ color: "rgba(255,255,255,0.75)", fontFamily: "'DM Sans',sans-serif" }}>Tham gia cộng đồng</span>
                                 </div>
                                 <h2 className="text-4xl xl:text-5xl font-bold text-white leading-tight mb-4">
                                     Bắt đầu<br />
-                                    <span className="shimmer-text">hành trình mới</span>
+                                    <span className="reg-shimmer-text">hành trình mới</span>
                                 </h2>
                                 <p className="leading-relaxed" style={{ color: "rgba(255,255,255,0.5)", maxWidth: 340, fontFamily: "'DM Sans',sans-serif" }}>
                                     Chỉ mất vài giây để tạo tài khoản và trải nghiệm toàn bộ tính năng vượt trội của nền tảng.
@@ -461,7 +459,7 @@ const RegisterPage = () => {
                             </div>
 
                             {/* Bottom promo card */}
-                            <div className="glass-card rounded-2xl p-5" style={{ animation: mounted ? "slideUp .8s .75s both" : "none", opacity: 0 }}>
+                            <div className="reg-glass-card rounded-2xl p-5" style={{ animation: mounted ? "reg-slideUp .8s .75s both" : "none", opacity: 0 }}>
                                 <div className="flex items-center gap-3 mb-3">
                                     <div className="flex -space-x-2">
                                         {["#38BDF8", "#FF6B2B", "#22C55E", "#A78BFA"].map((c, i) => (
@@ -486,7 +484,7 @@ const RegisterPage = () => {
 
                     {/* Right panel — Register form */}
                     <div className="w-[55%] xl:w-[50%] flex items-center justify-center p-8 xl:p-12 relative overflow-y-auto">
-                        <div className="w-full max-w-lg" style={{ animation: mounted ? "scaleIn .7s .35s both" : "none", opacity: 0 }}>
+                        <div className="w-full max-w-lg" style={{ animation: mounted ? "reg-scaleIn .7s .35s both" : "none", opacity: 0 }}>
 
                             {step === 0 ? (
                                 <>
@@ -519,7 +517,7 @@ const RegisterPage = () => {
                                                     <input type="text" value={form.name} onChange={set("name")}
                                                         onFocus={() => setFocused("nameD")} onBlur={() => setFocused(null)}
                                                         placeholder="Minh Đan"
-                                                        className={errors.name ? "error-shake" : ""}
+                                                        className={errors.name ? "reg-error-shake" : ""}
                                                         style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: `1.5px solid ${focused === "nameD" ? "#38BDF8" : errors.name ? "#FB923C" : "rgba(255,255,255,0.12)"}`, borderRadius: "1rem", color: "white", padding: "14px 16px 14px 44px", fontFamily: "'DM Sans',sans-serif", fontSize: "14px", outline: "none", transition: "all .3s", boxShadow: focused === "nameD" ? "0 0 0 3px rgba(56,189,248,0.18)" : "none" }} />
                                                 </div>
                                                 {errors.name && <p className="text-xs mt-1" style={{ color: "#FB923C", fontFamily: "'DM Sans',sans-serif" }}>⚠ {errors.name}</p>}
@@ -538,7 +536,7 @@ const RegisterPage = () => {
                                                         onChange={(e) => setForm(p => ({ ...p, phone: e.target.value.replace(/\D/g, "") }))}
                                                         onFocus={() => setFocused("phoneD")} onBlur={() => setFocused(null)}
                                                         placeholder="987 654 321"
-                                                        className={errors.phone ? "error-shake" : ""}
+                                                        className={errors.phone ? "reg-error-shake" : ""}
                                                         style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: `1.5px solid ${focused === "phoneD" ? "#FF6B2B" : errors.phone ? "#FB923C" : "rgba(255,255,255,0.12)"}`, borderRadius: "1rem", color: "white", padding: "14px 12px 14px 84px", fontFamily: "'DM Sans',sans-serif", fontSize: "14px", outline: "none", transition: "all .3s", boxShadow: focused === "phoneD" ? "0 0 0 3px rgba(255,107,43,0.18)" : "none" }} />
                                                 </div>
                                                 {errors.phone && <p className="text-xs mt-1" style={{ color: "#FB923C", fontFamily: "'DM Sans',sans-serif" }}>⚠ {errors.phone}</p>}
@@ -571,7 +569,7 @@ const RegisterPage = () => {
                                                     <input type={showPass ? "text" : "password"} value={form.password} onChange={set("password")}
                                                         onFocus={() => setFocused("passD")} onBlur={() => setFocused(null)}
                                                         placeholder="Tối thiểu 6 ký tự"
-                                                        className={errors.password ? "error-shake" : ""}
+                                                        className={errors.password ? "reg-error-shake" : ""}
                                                         style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: `1.5px solid ${focused === "passD" ? "#FF6B2B" : errors.password ? "#FB923C" : "rgba(255,255,255,0.12)"}`, borderRadius: "1rem", color: "white", padding: "14px 44px 14px 44px", fontFamily: "'DM Sans',sans-serif", fontSize: "14px", outline: "none", transition: "all .3s", boxShadow: focused === "passD" ? "0 0 0 3px rgba(255,107,43,0.18)" : "none" }} />
                                                     <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: "rgba(255,255,255,0.4)" }}>
                                                         {showPass ? icons.eyeOff : icons.eye}
@@ -593,7 +591,7 @@ const RegisterPage = () => {
                                                     <input type={showConfirm ? "text" : "password"} value={form.confirm} onChange={set("confirm")}
                                                         onFocus={() => setFocused("confirmD")} onBlur={() => setFocused(null)}
                                                         placeholder="Nhập lại"
-                                                        className={errors.confirm ? "error-shake" : ""}
+                                                        className={errors.confirm ? "reg-error-shake" : ""}
                                                         style={{ width: "100%", background: "rgba(255,255,255,0.06)", border: `1.5px solid ${focused === "confirmD" ? "#38BDF8" : errors.confirm ? "#FB923C" : form.confirm && form.confirm === form.password ? "#22C55E" : "rgba(255,255,255,0.12)"}`, borderRadius: "1rem", color: "white", padding: "14px 44px 14px 44px", fontFamily: "'DM Sans',sans-serif", fontSize: "14px", outline: "none", transition: "all .3s", boxShadow: focused === "confirmD" ? "0 0 0 3px rgba(56,189,248,0.18)" : "none" }} />
                                                     <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
                                                         {form.confirm && form.confirm === form.password && <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
@@ -626,13 +624,13 @@ const RegisterPage = () => {
                                         </div>
 
                                         {/* Submit */}
-                                        <button type="submit" onClick={handleRipple} disabled={isLoading} className="btn-register relative w-full rounded-2xl py-4 text-white font-semibold tracking-wide overflow-hidden">
+                                        <button type="submit" onClick={handleRipple} disabled={isLoading} className="reg-btn-register relative w-full rounded-2xl py-4 text-white font-semibold tracking-wide overflow-hidden">
                                             {ripples.map(r => (
-                                                <span key={r.id} className="absolute rounded-full" style={{ left: r.x, top: r.y, width: 20, height: 20, marginLeft: -10, marginTop: -10, background: "rgba(255,255,255,0.3)", animation: "ripple .7s linear forwards" }} />
+                                                <span key={r.id} className="absolute rounded-full" style={{ left: r.x, top: r.y, width: 20, height: 20, marginLeft: -10, marginTop: -10, background: "rgba(255,255,255,0.3)", animation: "reg-ripple .7s linear forwards" }} />
                                             ))}
                                             {isLoading ? (
                                                 <span className="flex items-center justify-center gap-2">
-                                                    <span className="flex gap-1 items-end">{[0, 1, 2].map(i => <span key={i} className="wave-bar w-1.5 h-5 rounded-full bg-white inline-block" style={{ animationDelay: `${i * .15}s` }} />)}</span>
+                                                    <span className="flex gap-1 items-end">{[0, 1, 2].map(i => <span key={i} className="reg-wave-bar w-1.5 h-5 rounded-full bg-white inline-block" style={{ animationDelay: `${i * .15}s` }} />)}</span>
                                                     Đang tạo tài khoản...
                                                 </span>
                                             ) : (
@@ -644,37 +642,20 @@ const RegisterPage = () => {
                                         </button>
                                     </form>
 
-                                    {/* Divider */}
-                                    <div className="flex items-center gap-3 my-5 divider-line">
-                                        <span className="text-xs px-3" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "'DM Sans',sans-serif" }}>hoặc đăng ký với</span>
-                                    </div>
-
-                                    {/* Social */}
-                                    <div className="grid grid-cols-2 gap-4">
-                                        {[
-                                            { name: "Google", icon: <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" /><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" /><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" /><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" /></svg> },
-                                            { name: "Zalo", icon: <svg width="20" height="20" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#0068FF" /><text x="12" y="17" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold" fontFamily="Arial">Z</text></svg> },
-                                        ].map(s => (
-                                            <button key={s.name} className="social-btn rounded-2xl py-3.5 flex items-center justify-center gap-3" style={{ color: "rgba(255,255,255,0.75)", fontFamily: "'DM Sans',sans-serif" }}>
-                                                {s.icon}{s.name}
-                                            </button>
-                                        ))}
-                                    </div>
-
                                     <p className="text-center text-sm mt-5" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "'DM Sans',sans-serif" }}>
                                         Đã có tài khoản?{" "}<span className="font-semibold cursor-pointer" style={{ color: "#FF6B2B" }}>Đăng nhập ngay</span>
                                     </p>
                                 </>
                             ) : (
                                 /* Desktop success */
-                                <div className="flex flex-col items-center text-center" style={{ animation: "successPop .6s ease forwards" }}>
-                                    <div style={{ animation: "successPop .5s .1s both", fontSize: 64 }}>🎉</div>
-                                    <div className="mt-4" style={{ animation: "successFade .5s .25s both", opacity: 0 }}>{icons.check}</div>
-                                    <h2 className="text-4xl font-bold text-white mt-4 mb-3" style={{ animation: "successFade .5s .35s both", opacity: 0 }}>Đăng ký thành công!</h2>
-                                    <p className="text-lg" style={{ color: "rgba(255,255,255,0.5)", fontFamily: "'DM Sans',sans-serif", animation: "successFade .5s .5s both", opacity: 0 }}>
+                                <div className="flex flex-col items-center text-center" style={{ animation: "reg-successPop .6s ease forwards" }}>
+                                    <div style={{ animation: "reg-successPop .5s .1s both", fontSize: 64 }}>🎉</div>
+                                    <div className="mt-4" style={{ animation: "reg-successFade .5s .25s both", opacity: 0 }}>{icons.check}</div>
+                                    <h2 className="text-4xl font-bold text-white mt-4 mb-3" style={{ animation: "reg-successFade .5s .35s both", opacity: 0 }}>Đăng ký thành công!</h2>
+                                    <p className="text-lg" style={{ color: "rgba(255,255,255,0.5)", fontFamily: "'DM Sans',sans-serif", animation: "reg-successFade .5s .5s both", opacity: 0 }}>
                                         Xin chào <span className="font-semibold text-white">{form.name}</span>!<br />Tài khoản của bạn đã sẵn sàng.
                                     </p>
-                                    <button className="btn-register mt-8 rounded-2xl py-4 px-12 text-white font-semibold text-lg" style={{ animation: "successFade .5s .65s both", opacity: 0 }}>
+                                    <button className="reg-btn-register mt-8 rounded-2xl py-4 px-12 text-white font-semibold text-lg" style={{ animation: "reg-successFade .5s .65s both", opacity: 0 }}>
                                         Đăng nhập ngay
                                     </button>
                                 </div>

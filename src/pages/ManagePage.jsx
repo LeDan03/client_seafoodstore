@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import useCategoriesStore from "../../stores/categoryStore";
 import useProductStore from "../../stores/productStore";
+import { uploadMultipleImages, uploadImage } from "../services/cloudinaryService";
 
 // ─── MOCK DATA ────────────────────────────────────────────────────────────────
 const VISITOR_DATA = [
@@ -370,7 +371,6 @@ const StatsTab = ({ consultations, setActiveTab }) => {
 // ─── CATEGORIES TAB ───────────────────────────────────────────────────────────
 const CategoriesTab = ({ categories, products, addCategory, removeCategory, openModal }) => {
   const [confirm, setConfirm] = useState(null);
-
   const handleDelete = (cat) => {
     setConfirm({
       message: `Xoá danh mục "${cat.name}"? Thao tác này không thể hoàn tác.`,
@@ -717,7 +717,7 @@ const CategoryModal = ({ mode, data, onClose, onSave }) => {
   return (
     <Modal title={mode === "add" ? "➕ Thêm danh mục" : "✏️ Sửa danh mục"} onClose={onClose}>
       <Field label="Tên danh mục *">
-        <input className="mp-input" value={form.name || ""} onChange={e => set("name", e.target.value)} placeholder="VD: Dịch vụ Web" autoFocus />
+        <input className="mp-input" value={form.name || ""} onChange={e => set("name", e.target.value)} placeholder="Bạch tuộc" autoFocus />
       </Field>
       <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
         <button className="mp-btn mp-btn-outline" style={{ flex: 1, padding: "11px" }} onClick={onClose}>Huỷ</button>
@@ -735,7 +735,7 @@ const ProductTypeModal = ({ mode, data, onClose, onSave }) => {
   return (
     <Modal title={mode === "add" ? "➕ Thêm loại sản phẩm" : "✏️ Sửa loại sản phẩm"} onClose={onClose}>
       <Field label="Tên loại sản phẩm *">
-        <input className="mp-input" value={form.name || ""} onChange={e => set("name", e.target.value)} placeholder="VD: Dịch vụ theo dự án" autoFocus />
+        <input className="mp-input" value={form.name || ""} onChange={e => set("name", e.target.value)} placeholder="VD: ĐÔNG LẠNH" autoFocus />
       </Field>
       <Field label="Mô tả">
         <textarea className="mp-input" value={form.description || ""} onChange={e => set("description", e.target.value)} placeholder="Mô tả ngắn..." style={{ minHeight: 84, resize: "vertical" }} />
@@ -751,8 +751,98 @@ const ProductTypeModal = ({ mode, data, onClose, onSave }) => {
 };
 
 const ProductModal = ({ mode, data, categories, productTypes, onClose, onSave }) => {
-  const [form, setForm] = useState(data || { name: "", description: "", minPrice: "", maxPrice: "", MOQ: 1, categoryId: categories[0]?.id || "", productTypeId: productTypes[0]?.id || "" });
+  const [form, setForm] = useState(data || { name: "", description: "", minPrice: "", maxPrice: "", MOQ: 1, categoryId: categories[0]?.id || "", productTypeId: productTypes[0]?.id || "", images: [] });
+  const [imageFiles, setImageFiles] = useState([]); // { file, preview, status: "pending"|"uploading"|"done"|"error", result?: {secureUrl, publicId} }
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
+
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
+
+  const MAX_IMAGES = 3;
+
+  const handleFileChange = (e) => {
+    const selected = Array.from(e.target.files);
+    const remaining = MAX_IMAGES - imageFiles.length;
+    if (remaining <= 0) return;
+
+    const toAdd = selected.slice(0, remaining).map(file => ({
+      id: `${Date.now()}_${Math.random()}`,
+      file,
+      preview: URL.createObjectURL(file),
+      status: "pending",
+      result: null,
+    }));
+    setImageFiles(prev => [...prev, ...toAdd]);
+    // reset input so same file can be re-selected if removed
+    e.target.value = "";
+  };
+
+  const removeImage = (id) => {
+    setImageFiles(prev => {
+      const item = prev.find(f => f.id === id);
+      if (item?.preview) URL.revokeObjectURL(item.preview);
+      return prev.filter(f => f.id !== id);
+    });
+  };
+
+  const handleSave = async () => {
+    // Upload pending images first
+    const pending = imageFiles.filter(f => f.status === "pending");
+    let uploadedImages = imageFiles.filter(f => f.status === "done").map(f => f.result);
+
+    if (pending.length > 0) {
+      setIsUploading(true);
+
+      // Mark all pending as uploading
+      setImageFiles(prev => prev.map(f => f.status === "pending" ? { ...f, status: "uploading" } : f));
+
+      const results = await Promise.allSettled(
+        pending.map(item => uploadImage(item.file).then(result => ({ id: item.id, result })))
+      );
+
+      const newUploaded = [];
+      const updatedFiles = [...imageFiles];
+
+      results.forEach(res => {
+        if (res.status === "fulfilled") {
+          const { id, result } = res.value;
+          const idx = updatedFiles.findIndex(f => f.id === id);
+          if (idx !== -1) updatedFiles[idx] = { ...updatedFiles[idx], status: "done", result };
+          newUploaded.push(result);
+        } else {
+          // mark error — find by order in pending array
+          const failedId = pending[results.indexOf(res)]?.id;
+          const idx = updatedFiles.findIndex(f => f.id === failedId);
+          if (idx !== -1) updatedFiles[idx] = { ...updatedFiles[idx], status: "error" };
+        }
+      });
+
+      setImageFiles(updatedFiles);
+      setIsUploading(false);
+
+      // If any upload failed, stop — let user retry or remove
+      const hasError = results.some(r => r.status === "rejected");
+      if (hasError) {
+        toast.error("Một số ảnh tải lên thất bại. Vui lòng thử lại hoặc xóa ảnh lỗi.");
+        return;
+      }
+
+      uploadedImages = [...uploadedImages, ...newUploaded];
+    }
+
+    onSave({
+      ...form,
+      minPrice: Number(form.minPrice),
+      maxPrice: Number(form.maxPrice),
+      MOQ: Number(form.MOQ),
+      categoryId: Number(form.categoryId),
+      productTypeId: Number(form.productTypeId),
+      imageRequests: uploadedImages
+    });
+  };
+
+  const canSave = form.name?.trim() && !isUploading;
+
   return (
     <Modal title={mode === "add" ? "➕ Thêm sản phẩm" : "✏️ Sửa sản phẩm"} onClose={onClose} wide>
       <Field label="Tên sản phẩm *">
@@ -761,6 +851,84 @@ const ProductModal = ({ mode, data, categories, productTypes, onClose, onSave })
       <Field label="Mô tả">
         <textarea className="mp-input" value={form.description || ""} onChange={e => set("description", e.target.value)} placeholder="Mô tả chi tiết..." style={{ minHeight: 72, resize: "vertical" }} />
       </Field>
+
+      {/* ── IMAGE UPLOAD ── */}
+      <Field label={`Hình ảnh sản phẩm (tối đa ${MAX_IMAGES} ảnh)`}>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-start" }}>
+
+          {/* Existing + newly added previews */}
+          {imageFiles.map(item => (
+            <div key={item.id} style={{ position: "relative", width: 86, height: 86, borderRadius: 10, overflow: "hidden", border: `2px solid ${item.status === "error" ? "#FCA5A5" : item.status === "done" ? "#6EE7B7" : "#E2E8F0"}`, flexShrink: 0 }}>
+              <img src={item.preview} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+
+              {/* Uploading overlay */}
+              {item.status === "uploading" && (
+                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ animation: "mp-spin 1s linear infinite" }}>
+                    <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="2.5" strokeDasharray="31.4 31.4" strokeLinecap="round" />
+                  </svg>
+                </div>
+              )}
+
+              {/* Done badge */}
+              {item.status === "done" && (
+                <div style={{ position: "absolute", bottom: 4, right: 4, width: 18, height: 18, borderRadius: "50%", background: "#10B981", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </div>
+              )}
+
+              {/* Error badge */}
+              {item.status === "error" && (
+                <div style={{ position: "absolute", bottom: 4, right: 4, width: 18, height: 18, borderRadius: "50%", background: "#EF4444", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="white" strokeWidth="3" strokeLinecap="round" /></svg>
+                </div>
+              )}
+
+              {/* Remove button — only when not uploading */}
+              {item.status !== "uploading" && (
+                <button
+                  type="button"
+                  onClick={() => removeImage(item.id)}
+                  style={{ position: "absolute", top: 3, right: 3, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,.55)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}
+                >
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="white" strokeWidth="3" strokeLinecap="round" /></svg>
+                </button>
+              )}
+            </div>
+          ))}
+
+          {/* Add button — only if under limit */}
+          {imageFiles.length < MAX_IMAGES && (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              style={{ width: 86, height: 86, borderRadius: 10, border: "2px dashed #CBD5E1", background: "#F8FAFC", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 5, color: "#94A3B8", fontSize: 11, flexShrink: 0, transition: "border-color .2s, background .2s" }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "#FF6B2B"; e.currentTarget.style.background = "#FFF7F4"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "#CBD5E1"; e.currentTarget.style.background = "#F8FAFC"; }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" /></svg>
+              <span>Thêm ảnh</span>
+              <span style={{ fontSize: 10, color: "#CBD5E1" }}>{imageFiles.length}/{MAX_IMAGES}</span>
+            </button>
+          )}
+        </div>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+        />
+
+        {imageFiles.length > 0 && (
+          <p style={{ margin: "6px 0 0", fontSize: 11, color: "#94A3B8" }}>
+            Ảnh sẽ được tải lên Cloudinary khi bạn lưu sản phẩm.
+          </p>
+        )}
+      </Field>
+
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
         <Field label="Giá thấp nhất (₫)" half>
           <input className="mp-input" type="number" value={form.minPrice || ""} onChange={e => set("minPrice", e.target.value)} placeholder="0" />
@@ -772,6 +940,7 @@ const ProductModal = ({ mode, data, categories, productTypes, onClose, onSave })
           <input className="mp-input" type="number" value={form.MOQ || 1} onChange={e => set("MOQ", e.target.value)} placeholder="1" />
         </Field>
       </div>
+
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
         <Field label="Danh mục" half>
           <select className="mp-input mp-select" value={form.categoryId || ""} onChange={e => set("categoryId", e.target.value)}>
@@ -784,12 +953,30 @@ const ProductModal = ({ mode, data, categories, productTypes, onClose, onSave })
           </select>
         </Field>
       </div>
+
       <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
-        <button className="mp-btn mp-btn-outline" style={{ flex: 1, padding: "11px" }} onClick={onClose}>Huỷ</button>
-        <button className="mp-btn mp-btn-primary" style={{ flex: 2, padding: "11px", fontSize: 14 }} onClick={() => onSave(form)} disabled={!form.name?.trim()}>
-          {mode === "add" ? "Thêm mới" : "Lưu thay đổi"}
+        <button className="mp-btn mp-btn-outline" style={{ flex: 1, padding: "11px" }} onClick={onClose} disabled={isUploading}>Huỷ</button>
+        <button
+          className="mp-btn mp-btn-primary"
+          style={{ flex: 2, padding: "11px", fontSize: 14 }}
+          onClick={handleSave}
+          disabled={!canSave}
+        >
+          {isUploading ? (
+            <span style={{ display: "flex", alignItems: "center", gap: 7, justifyContent: "center" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ animation: "mp-spin 1s linear infinite" }}>
+                <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="2.5" strokeDasharray="31.4 31.4" strokeLinecap="round" />
+              </svg>
+              Đang tải ảnh...
+            </span>
+          ) : (
+            mode === "add" ? "Thêm mới" : "Lưu thay đổi"
+          )}
         </button>
       </div>
+
+      {/* Spinner keyframe — injected locally to avoid global pollution */}
+      <style>{`@keyframes mp-spin { to { transform: rotate(360deg); } }`}</style>
     </Modal>
   );
 };
@@ -855,15 +1042,13 @@ const ManagePage = () => {
   const tabBarRef = useRef(null);
 
   // Local state
-  const [products, setProducts] = useState(MOCK_PRODUCTS);
   const [consultations, setConsultations] = useState(MOCK_CONSULTATIONS);
 
   // Store
   const { categories, fetchCategories, addCategory, removeCategory } = useCategoriesStore();
-  const { productTypes, fetchProductTypes, addProductType, removeProductType } = useProductStore();
+  const { products, productTypes, fetchProductTypes, addProductType, removeProductType, addProduct, fetchProducts } = useProductStore();
 
   useEffect(() => { setTimeout(() => setMounted(true), 80); }, []);
-
   useEffect(() => {
     if (!categories || categories.length === 0) fetchCategories();
   }, [categories]);
@@ -871,6 +1056,10 @@ const ManagePage = () => {
   useEffect(() => {
     if (!productTypes || productTypes.length === 0) fetchProductTypes();
   }, [productTypes]);
+
+  useEffect(() => {
+    if (!products || products.length === 0) fetchProducts();
+  }, [products]);
 
   useEffect(() => {
     const el = tabBarRef.current?.querySelector(`[data-tab="${activeTab}"]`);
@@ -887,21 +1076,21 @@ const ManagePage = () => {
   const handleSave = (form) => {
     if (modal.type === "category") {
       if (modal.mode === "add") {
-        addCategory({ id: `CAT${String((categories?.length || 0) + 1).padStart(3, "0")}`, ...form });
+        addCategory({ categoryName: form.name });
       } else {
         // update via store or local patch — keeping existing logic pattern
         addCategory({ ...modal.data, ...form }); // stores typically handle upsert
       }
     } else if (modal.type === "producttype") {
       if (modal.mode === "add") {
-        addProductType({ id: `PT${String((productTypes?.length || 0) + 1).padStart(3, "0")}`, ...form });
+        addProductType({ ...form });
       } else {
         addProductType({ ...modal.data, ...form });
       }
     } else if (modal.type === "product") {
       const now = new Date().toISOString().split("T")[0];
       if (modal.mode === "add") {
-        setProducts(prev => [...prev, { id: `SP${String(prev.length + 1).padStart(3, "0")}`, images: [], createdAt: now, updatedAt: now, ...form, minPrice: Number(form.minPrice) || 0, maxPrice: Number(form.maxPrice) || 0, MOQ: Number(form.MOQ) || 1 }]);
+        addProduct(form)
       } else {
         setProducts(prev => prev.map(p => p.id === modal.data.id ? { ...p, ...form, minPrice: Number(form.minPrice), maxPrice: Number(form.maxPrice), MOQ: Number(form.MOQ), updatedAt: now } : p));
       }
